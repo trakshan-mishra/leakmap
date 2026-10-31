@@ -1,0 +1,150 @@
+# Third parties apps commonly send data to.
+#
+# country  ISO code of the vendor's headquarters. Where data is actually
+#          processed depends on your plan and region; check the vendor's DPA.
+# hosts    "example.com" matches the host and every subdomain;
+#          entries containing "*" are glob patterns.
+#
+# Missing a vendor? Add it here and open a PR.
+
+# --- LLM and AI APIs ---
+- {id: openai, name: OpenAI, kind: llm, country: US, hosts: [api.openai.com]}
+- {id: anthropic, name: Anthropic, kind: llm, country: US, hosts: [api.anthropic.com]}
+- {id: google-gemini, name: Google Gemini API, kind: llm, country: US, hosts: [generativelanguage.googleapis.com]}
+- {id: google-vertex, name: Google Vertex AI, kind: llm, country: US, hosts: ["*aiplatform.googleapis.com"]}
+- {id: azure-openai, name: Azure OpenAI, kind: llm, country: US, hosts: [openai.azure.com, services.ai.azure.com]}
+- {id: aws-bedrock, name: AWS Bedrock, kind: llm, country: US, hosts: ["bedrock-runtime.*.amazonaws.com", "bedrock-agent-runtime.*.amazonaws.com"]}
+- {id: mistral, name: Mistral AI, kind: llm, country: FR, hosts: [api.mistral.ai]}
+- {id: cohere, name: Cohere, kind: llm, country: CA, hosts: [api.cohere.com, api.cohere.ai]}
+- {id: groq, name: Groq, kind: llm, country: US, hosts: [api.groq.com]}
+- {id: together, name: Together AI, kind: llm, country: US, hosts: [api.together.xyz, api.together.ai]}
+- {id: fireworks, name: Fireworks AI, kind: llm, country: US, hosts: [api.fireworks.ai]}
+- {id: deepseek, name: DeepSeek, kind: llm, country: CN, hosts: [api.deepseek.com]}
+- {id: openrouter, name: OpenRouter, kind: llm, country: US, hosts: [openrouter.ai]}
+- {id: perplexity, name: Perplexity, kind: llm, country: US, hosts: [api.perplexity.ai]}
+- {id: xai, name: xAI, kind: llm, country: US, hosts: [api.x.ai]}
+- {id: cerebras, name: Cerebras, kind: llm, country: US, hosts: [api.cerebras.ai]}
+- {id: replicate, name: Replicate, kind: llm, country: US, hosts: [api.replicate.com]}
+- {id: huggingface, name: Hugging Face, kind: llm, country: US, hosts: [api-inference.huggingface.co, router.huggingface.co, "*.endpoints.huggingface.cloud"]}
+- {id: sarvam, name: Sarvam AI, kind: llm, country: IN, hosts: [api.sarvam.ai]}
+- {id: zhipu, name: Zhipu / Z.ai, kind: llm, country: CN, hosts: [api.z.ai, open.bigmodel.cn]}
+- {id: moonshot, name: Moonshot AI, kind: llm, country: CN, hosts: [api.moonshot.ai, api.moonshot.cn]}
+- {id: alibaba-dashscope, name: Alibaba DashScope (Qwen), kind: llm, country: CN, hosts: [dashscope.aliyuncs.com, dashscope-intl.aliyuncs.com]}
+- {id: voyage, name: Voyage AI, kind: llm, country: US, hosts: [api.voyageai.com]}
+- {id: jina, name: Jina AI, kind: llm, country: DE, hosts: [api.jina.ai]}
+- {id: elevenlabs, name: ElevenLabs, kind: llm, country: US, hosts: [api.elevenlabs.io]}
+- {id: deepgram, name: Deepgram, kind: llm, country: US, hosts: [api.deepgram.com]}
+- {id: assemblyai, name: AssemblyAI, kind: llm, country: US, hosts: [api.assemblyai.com]}
+- {id: cloudflare-ai-gateway, name: Cloudflare AI Gateway, kind: llm, country: US, hosts: [gateway.ai.cloudflare.com]}
+
+# --- LLM observability and evals ---
+- {id: langfuse, name: Langfuse, kind: llm-observability, country: DE, hosts: [cloud.langfuse.com, us.cloud.langfuse.com]}
+- {id: langsmith, name: LangSmith, kind: llm-observability, country: US, hosts: [api.smith.langchain.com, eu.api.smith.langchain.com]}
+- {id: helicone, name: Helicone, kind: llm-observability, country: US, hosts: [helicone.ai]}
+- {id: braintrust, name: Braintrust, kind: llm-observability, country: US, hosts: [api.braintrust.dev, braintrust.dev]}
+- {id: arize, name: Arize AI, kind: llm-observability, country: US, hosts: [otlp.arize.com, app.arize.com, app.phoenix.arize.com]}
+- {id: comet-opik, name: Comet / Opik, kind: llm-observability, country: US, hosts: [comet.com]}
+- {id: wandb, name: Weights & Biases, kind: llm-observability, country: US, hosts: [api.wandb.ai, trace.wandb.ai]}
+- {id: humanloop, name: Humanloop, kind: llm-observability, country: GB, hosts: [api.humanloop.com]}
+- {id: portkey, name: Portkey, kind: llm-observability, country: US, hosts: [api.portkey.ai]}
+- {id: agentops, name: AgentOps, kind: llm-observability, country: US, hosts: [api.agentops.ai]}
+- {id: neatlogs, name: Neatlogs, kind: llm-observability, country: IN, hosts: [ingest.neatlogs.com, neatlogs.com]}
+- {id: traceloop, name: Traceloop, kind: llm-observability, country: IL, hosts: [api.traceloop.com]}
+- {id: laminar, name: Laminar, kind: llm-observability, country: US, hosts: [api.lmnr.ai]}
+- {id: honeyhive, name: HoneyHive, kind: llm-observability, country: US, hosts: [api.honeyhive.ai]}
+- {id: promptlayer, name: PromptLayer, kind: llm-observability, country: US, hosts: [api.promptlayer.com]}
+- {id: logfire, name: Pydantic Logfire, kind: llm-observability, country: GB, hosts: [logfire-api.pydantic.dev, logfire-us.pydantic.dev, logfire-eu.pydantic.dev]}
+- {id: galileo, name: Galileo, kind: llm-observability, country: US, hosts: [api.galileo.ai]}
+
+# --- Errors, logs and APM ---
+- {id: sentry, name: Sentry, kind: error-tracking, country: US, hosts: [sentry.io]}
+- {id: datadog, name: Datadog, kind: apm, country: US, hosts: [datadoghq.com, datadoghq.eu, browser-intake-datadoghq.com, ddog-gov.com]}
+- {id: newrelic, name: New Relic, kind: apm, country: US, hosts: [newrelic.com, nr-data.net]}
+- {id: honeycomb, name: Honeycomb, kind: apm, country: US, hosts: [api.honeycomb.io, api.eu1.honeycomb.io]}
+- {id: grafana-cloud, name: Grafana Cloud, kind: apm, country: US, hosts: [grafana.net]}
+- {id: elastic-cloud, name: Elastic Cloud, kind: apm, country: US, hosts: [elastic-cloud.com, cloud.es.io]}
+- {id: bugsnag, name: Bugsnag, kind: error-tracking, country: US, hosts: [bugsnag.com]}
+- {id: rollbar, name: Rollbar, kind: error-tracking, country: US, hosts: [api.rollbar.com]}
+- {id: logrocket, name: LogRocket, kind: session-replay, country: US, hosts: [logrocket.io, lr-ingest.io, lr-in-prod.com]}
+- {id: betterstack, name: Better Stack, kind: logging, country: CZ, hosts: [betterstack.com, logs.betterstack.com]}
+- {id: axiom, name: Axiom, kind: logging, country: US, hosts: [api.axiom.co]}
+
+# --- Product analytics and attribution ---
+- {id: mixpanel, name: Mixpanel, kind: analytics, country: US, hosts: [mixpanel.com]}
+- {id: amplitude, name: Amplitude, kind: analytics, country: US, hosts: [amplitude.com]}
+- {id: segment, name: Segment, kind: analytics, country: US, hosts: [api.segment.io, cdn.segment.com, events.eu1.segmentapis.com]}
+- {id: posthog, name: PostHog, kind: analytics, country: US, hosts: [posthog.com]}
+- {id: google-analytics, name: Google Analytics, kind: analytics, country: US, hosts: [google-analytics.com, analytics.google.com]}
+- {id: firebase-analytics, name: Firebase Analytics, kind: analytics, country: US, hosts: [app-measurement.com, firebaselogging-pa.googleapis.com, firebaselogging.googleapis.com]}
+- {id: heap, name: Heap, kind: analytics, country: US, hosts: [heapanalytics.com]}
+- {id: hotjar, name: Hotjar, kind: session-replay, country: MT, hosts: [hotjar.com, hotjar.io]}
+- {id: microsoft-clarity, name: Microsoft Clarity, kind: session-replay, country: US, hosts: [clarity.ms]}
+- {id: fullstory, name: FullStory, kind: session-replay, country: US, hosts: [fullstory.com]}
+- {id: rudderstack, name: RudderStack, kind: analytics, country: US, hosts: [rudderstack.com]}
+- {id: webengage, name: WebEngage, kind: analytics, country: IN, hosts: [webengage.com]}
+- {id: appsflyer, name: AppsFlyer, kind: attribution, country: US, hosts: [appsflyer.com]}
+- {id: branch, name: Branch, kind: attribution, country: US, hosts: [api2.branch.io, api.branch.io]}
+- {id: onesignal, name: OneSignal, kind: messaging, country: US, hosts: [onesignal.com]}
+
+# --- Messaging, email, support, CRM ---
+- {id: twilio, name: Twilio, kind: messaging, country: US, hosts: [api.twilio.com]}
+- {id: sendgrid, name: SendGrid, kind: email, country: US, hosts: [api.sendgrid.com]}
+- {id: mailgun, name: Mailgun, kind: email, country: US, hosts: [api.mailgun.net, api.eu.mailgun.net]}
+- {id: postmark, name: Postmark, kind: email, country: US, hosts: [api.postmarkapp.com]}
+- {id: resend, name: Resend, kind: email, country: US, hosts: [api.resend.com]}
+- {id: aws-ses, name: AWS SES, kind: email, country: US, hosts: ["email.*.amazonaws.com"]}
+- {id: brevo, name: Brevo, kind: email, country: FR, hosts: [api.brevo.com, api.sendinblue.com]}
+- {id: mailchimp, name: Mailchimp, kind: email, country: US, hosts: [api.mailchimp.com, mandrillapp.com]}
+- {id: msg91, name: MSG91, kind: messaging, country: IN, hosts: [msg91.com]}
+- {id: gupshup, name: Gupshup, kind: messaging, country: IN, hosts: [gupshup.io]}
+- {id: exotel, name: Exotel, kind: messaging, country: IN, hosts: [exotel.com]}
+- {id: meta-graph, name: Meta (WhatsApp Cloud API), kind: messaging, country: US, hosts: [graph.facebook.com]}
+- {id: slack, name: Slack, kind: messaging, country: US, hosts: [slack.com]}
+- {id: discord, name: Discord, kind: messaging, country: US, hosts: [discord.com, discordapp.com]}
+- {id: telegram, name: Telegram, kind: messaging, country: AE, hosts: [api.telegram.org]}
+- {id: intercom, name: Intercom, kind: support, country: US, hosts: [api.intercom.io, api.eu.intercom.io]}
+- {id: zendesk, name: Zendesk, kind: support, country: US, hosts: [zendesk.com]}
+- {id: freshworks, name: Freshworks, kind: support, country: US, hosts: [freshdesk.com, freshworks.com, freshchat.com]}
+- {id: hubspot, name: HubSpot, kind: crm, country: US, hosts: [api.hubapi.com, api.hubspot.com]}
+- {id: salesforce, name: Salesforce, kind: crm, country: US, hosts: [salesforce.com, force.com]}
+
+# --- Payments and identity ---
+- {id: razorpay, name: Razorpay, kind: payments, country: IN, hosts: [api.razorpay.com]}
+- {id: cashfree, name: Cashfree, kind: payments, country: IN, hosts: [api.cashfree.com, sandbox.cashfree.com]}
+- {id: payu, name: PayU India, kind: payments, country: IN, hosts: [payu.in]}
+- {id: phonepe, name: PhonePe, kind: payments, country: IN, hosts: [api.phonepe.com, api-preprod.phonepe.com]}
+- {id: stripe, name: Stripe, kind: payments, country: US, hosts: [api.stripe.com]}
+- {id: paypal, name: PayPal, kind: payments, country: US, hosts: [api.paypal.com, api-m.paypal.com, api-m.sandbox.paypal.com]}
+- {id: setu, name: Setu, kind: identity, country: IN, hosts: [setu.co]}
+- {id: digilocker, name: DigiLocker, kind: identity, country: IN, hosts: [digitallocker.gov.in]}
+- {id: auth0, name: Auth0, kind: auth, country: US, hosts: [auth0.com]}
+- {id: clerk, name: Clerk, kind: auth, country: US, hosts: [api.clerk.com, clerk.accounts.dev]}
+- {id: okta, name: Okta, kind: auth, country: US, hosts: [okta.com]}
+- {id: firebase-auth, name: Firebase Auth, kind: auth, country: US, hosts: [identitytoolkit.googleapis.com, securetoken.googleapis.com]}
+
+# --- Databases, vector stores, storage ---
+- {id: pinecone, name: Pinecone, kind: vector-db, country: US, hosts: [pinecone.io]}
+- {id: weaviate, name: Weaviate Cloud, kind: vector-db, country: NL, hosts: [weaviate.cloud, weaviate.network]}
+- {id: qdrant, name: Qdrant Cloud, kind: vector-db, country: DE, hosts: [cloud.qdrant.io]}
+- {id: zilliz, name: Zilliz Cloud, kind: vector-db, country: US, hosts: [zillizcloud.com]}
+- {id: supabase, name: Supabase, kind: database, country: US, hosts: [supabase.co]}
+- {id: mongodb-atlas, name: MongoDB Atlas, kind: database, country: US, hosts: [mongodb.net]}
+- {id: upstash, name: Upstash, kind: database, country: US, hosts: [upstash.io]}
+- {id: neon, name: Neon, kind: database, country: US, hosts: [neon.tech]}
+- {id: firebase-db, name: Firebase Firestore / RTDB, kind: database, country: US, hosts: [firestore.googleapis.com, firebaseio.com]}
+- {id: algolia, name: Algolia, kind: search, country: US, hosts: [algolia.net, algolianet.com]}
+- {id: aws-s3, name: AWS S3, kind: storage, country: US, hosts: ["*.s3.amazonaws.com", "s3.*.amazonaws.com", "*.s3.*.amazonaws.com", s3.amazonaws.com]}
+- {id: google-cloud-storage, name: Google Cloud Storage, kind: storage, country: US, hosts: [storage.googleapis.com]}
+- {id: azure-blob, name: Azure Blob Storage, kind: storage, country: US, hosts: [blob.core.windows.net]}
+- {id: cloudflare-r2, name: Cloudflare R2, kind: storage, country: US, hosts: [r2.cloudflarestorage.com]}
+- {id: cloudinary, name: Cloudinary, kind: storage, country: US, hosts: [api.cloudinary.com, res.cloudinary.com]}
+
+# --- Web search and scraping APIs used by agents ---
+- {id: serpapi, name: SerpApi, kind: search, country: US, hosts: [serpapi.com]}
+- {id: tavily, name: Tavily, kind: search, country: US, hosts: [api.tavily.com]}
+- {id: exa, name: Exa, kind: search, country: US, hosts: [api.exa.ai]}
+- {id: firecrawl, name: Firecrawl, kind: search, country: US, hosts: [api.firecrawl.dev]}
+
+# --- Feature flags ---
+- {id: launchdarkly, name: LaunchDarkly, kind: feature-flags, country: US, hosts: [launchdarkly.com]}
+- {id: statsig, name: Statsig, kind: feature-flags, country: US, hosts: [statsig.com, statsigapi.net]}

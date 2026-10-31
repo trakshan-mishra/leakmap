@@ -1,0 +1,173 @@
+# Detectors are data, not code, so they can be reviewed in a PR and reused by a
+# future non-Python implementation.
+#
+# pattern           regex run against every string value (numbers are scanned as strings)
+# validator         optional name from leakmap/validators.py; the match is dropped if it fails
+# confidence        high | medium | low when nothing else is known
+# category          reported category (defaults to id); several detectors can share one
+# hint              field-name regex that confirms the match (-> high)
+# context           regex on the 40 characters before the match that confirms it (-> high)
+# negative_key      field-name regex that rules the match out
+# negative_context  regex on the 40 characters before the match that rules it out
+# exclude           regex on the matched text that rules it out
+# Confirming evidence wins over negative evidence.
+#
+# Order matters: earlier detectors claim their span first.
+
+x-numeric-negatives: &numeric_negatives '(?i)(order|invoice|inv|txn|transaction|ref|reference|tracking|awb|shipment|consignment|imei|iccid|\bsim\b|serial|isbn|ean|upc|otp|ticket|build|version|batch|sku|product|item|policy|claim|employee|emp|roll|registration|booking|pnr|lot|model|part)\b[^A-Za-z0-9]{0,6}(no\.?|num|number|id|code|#)?[^A-Za-z0-9]{0,4}$'
+x-numeric-negative-keys: &numeric_negative_keys '(?i)(order|invoice|txn|transaction|ref|tracking|awb|imei|iccid|serial|isbn|otp|ticket|build|version|sku|product|item|policy|claim|booking|pnr|_id$|^id$|uuid|hash|nonce|timestamp|_at$|_ts$|time|amount|price|count|size|bytes|duration|port|pid|seq|offset)'
+
+detectors:
+  # --- secrets: checked first, most specific shapes ---
+  - id: llm_api_key
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w-])sk-(?:ant-(?:api|admin)\d{2}-|proj-|svcacct-|admin-)?[A-Za-z0-9_-]{32,}(?![\w-])'
+    confidence: high
+  - id: aws_access_key
+    category: secret
+    label: API key or secret
+    pattern: '(?<![A-Z0-9])(?:AKIA|ASIA)[0-9A-Z]{16}(?![A-Z0-9])'
+    confidence: high
+  - id: github_token
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w])(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{60,})(?![\w])'
+    confidence: high
+  - id: slack_token
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w-])xox[baprs]-[A-Za-z0-9-]{10,}'
+    confidence: high
+  - id: google_api_key
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w-])AIza[0-9A-Za-z_-]{35}(?![\w-])'
+    confidence: high
+  - id: payment_live_key
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w])(?:(?:sk|rk)_live_[A-Za-z0-9]{20,}|rzp_live_[A-Za-z0-9]{14,})(?![\w])'
+    confidence: high
+  - id: private_key
+    category: secret
+    label: API key or secret
+    pattern: '-----BEGIN (?:RSA |EC |DSA |OPENSSH |PGP |ENCRYPTED )?PRIVATE KEY-----'
+    confidence: high
+  - id: jwt
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w-])eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}(?![\w-])'
+    confidence: medium
+
+  # --- Indian identifiers ---
+  - id: aadhaar
+    label: Aadhaar number
+    # \w and - boundaries keep UUID tails and hex ids from matching.
+    pattern: '(?<![\w-])(?<!\d )(?<!\d-)[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}(?![\w@-])(?![ -]\d)'
+    validator: verhoeff
+    confidence: high
+    context: '(?i)(aadhaa?r|aadhar|uidai|\buid\b|आधार)[^0-9]{0,25}$'
+    hint: '(?i)(aadhaa?r|uid)'
+    negative_context: *numeric_negatives
+    negative_key: *numeric_negative_keys
+    # Unspaced 91 + mobile is a phone number written with the country code.
+    exclude: '^91[6-9]\d{9}$'
+
+  - id: gstin
+    label: GSTIN
+    pattern: '(?<![A-Za-z0-9])\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z](?![A-Za-z0-9])'
+    validator: gstin
+    confidence: high
+
+  - id: pan
+    label: PAN
+    # 4th character is the holder type (P = person, C = company, ...).
+    pattern: '(?<![A-Za-z0-9])[A-Z]{3}[ABCFGHJLPT][A-Z]\d{4}[A-Z](?![A-Za-z0-9])'
+    confidence: high
+
+  - id: card
+    label: Payment card number
+    pattern: '(?<![\w-])(?<!\d )(?<!\d-)(?:\d[ -]?){12,18}\d(?![\w@-])(?![ -]\d)'
+    validator: luhn
+    confidence: high
+    negative_context: *numeric_negatives
+    negative_key: *numeric_negative_keys
+
+  - id: upi_id
+    label: UPI ID
+    pattern: '(?<![\w.-])[\w.-]{2,64}@(?:ok(?:axis|sbi|hdfcbank|icici|bizaxis)|ybl|ibl|axl|paytm|ptyes|ptaxis|pthdfc|ptsbi|upi|apl|yapl|fbl|kotak|icici|sbi|hdfcbank|axisbank|axisb|jupiteraxis|fam|freecharge|slc|tapicici|waaxis|wahdfcbank|wasbi|waicici|abfspay|ikwik|airtel|jio|indus|pnb|barodampay|boi|cnrb|idfcbank|yesbank|dbs|rbl|federal|kbl|aubank|equitas)(?![\w-])(?!\.\w)'
+    confidence: high
+
+  - id: email
+    label: Email address
+    # Not after / or : so URL credentials (Sentry DSNs, https://key@host) are skipped.
+    pattern: '(?<![\w.+/:-])[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,24}(?![\w-])'
+    confidence: high
+    # Retina assets (icon@2x.png), git remotes and role mailboxes are not people.
+    exclude: '(?i)(\.(png|jpe?g|gif|svg|webp|ico|bmp|avif|js|mjs|cjs|ts|tsx|jsx|css|scss|py|rb|go|rs|java|json|ya?ml|toml|md|txt|zip|gz|tar|pdf|html?|xml|lock|whl)$|^(git|no-?reply|do-?not-?reply|mailer-daemon|postmaster)@)'
+
+  - id: phone_in
+    label: Indian mobile number
+    pattern: '(?<![\w+/.#-])(?:\+?91[ -]?|0)?[6-9]\d{4}[ -]?\d{5}(?![\w@-])'
+    confidence: medium
+    hint: '(?i)(phone|mobile|msisdn|contact|whatsapp|cell)'
+    context: '(?i)(phone|mobile|\bmob\b|call|contact|whatsapp|\bcell\b|\btel\b|\bsms\b|msisdn|reach me|text me|\bph\b|फ़ोन|फोन)[^0-9]{0,20}$'
+    negative_context: *numeric_negatives
+    negative_key: *numeric_negative_keys
+
+  - id: ip_address
+    label: Public IP address
+    pattern: '(?<![\w.])(?:\d{1,3}\.){3}\d{1,3}(?!\w)(?!\.\d)'
+    validator: ipv4_public
+    confidence: low
+    hint: '(?i)(^|_)(ip|ip_?address|client_?ip|remote_?addr|x_forwarded_for|user_?ip)$'
+    context: '(?i)(\bip\b|ip address|client|remote addr|forwarded|from ip|login from|source)[^0-9]{0,15}$'
+    negative_context: '(?i)(version|\bv|build|release)[^0-9]{0,3}$'
+
+  - id: ifsc
+    label: Bank IFSC
+    pattern: '(?<![A-Za-z0-9])[A-Z]{4}0[A-Z0-9]{6}(?![A-Za-z0-9])'
+    confidence: medium
+    context: '(?i)(ifsc|bank|branch)[^A-Za-z0-9]{0,10}$'
+    hint: '(?i)ifsc'
+
+# Field-name rules: the value is personal data because of what the field is
+# called, not because of its shape. Values must be non-empty strings.
+fields:
+  - id: person_name
+    label: Person name
+    key: '(?i)^(first_?name|last_?name|full_?name|given_?name|family_?name|surname|customer_?name|patient_?name|display_?name|legal_?name|father_?name|mother_?name)$'
+    confidence: high
+
+  - id: date_of_birth
+    label: Date of birth
+    key: '(?i)^(dob|date_?of_?birth|birth_?date|birthday)$'
+    confidence: high
+
+  - id: address
+    label: Postal address
+    key: '(?i)^(address|street|street_?address|address_?line_?\d?|home_?address|postal_?address|billing_?address|shipping_?address)$'
+    confidence: high
+
+  - id: postal_code
+    label: PIN / postal code
+    key: '(?i)^(pin_?code|pincode|zip|zip_?code|postal_?code)$'
+    confidence: medium
+
+  - id: gender
+    label: Gender
+    key: '(?i)^(gender|sex)$'
+    confidence: medium
+
+  - id: health
+    label: Health data
+    key: '(?i)^(diagnosis|symptoms?|medical_?history|prescription|medications?|blood_?group|allergies)$'
+    confidence: high
+
+  - id: password
+    category: secret
+    label: API key or secret
+    # Not api_key/token: PostHog and Mixpanel send public project keys under those names.
+    key: '(?i)^(password|passwd|pwd|client_?secret|private_?key|refresh_?token|secret_?key)$'
+    confidence: high
