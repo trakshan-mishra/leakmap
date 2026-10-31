@@ -6,3 +6,4 @@ dist/
 leakmap-demo.html
 .pytest_cache/
 benchmark/data/gretel/
+.coverage

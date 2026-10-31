@@ -1,0 +1,41 @@
+{
+  "dataset": "gretel-pii-masking-en-v1/test",
+  "samples": 5000,
+  "engine": "presidio",
+  "threshold": 0.5,
+  "floor": null,
+  "metrics": {
+    "card": {
+      "tp": 332,
+      "fp": 40,
+      "fn": 67,
+      "precision": 0.8925,
+      "recall": 0.8321,
+      "f1": 0.8612
+    },
+    "email": {
+      "tp": 1045,
+      "fp": 18,
+      "fn": 4,
+      "precision": 0.9831,
+      "recall": 0.9962,
+      "f1": 0.9896
+    },
+    "ip_address": {
+      "tp": 876,
+      "fp": 44,
+      "fn": 10,
+      "precision": 0.9522,
+      "recall": 0.9887,
+      "f1": 0.9701
+    },
+    "all": {
+      "tp": 2253,
+      "fp": 102,
+      "fn": 81,
+      "precision": 0.9567,
+      "recall": 0.9653,
+      "f1": 0.961
+    }
+  }
+}

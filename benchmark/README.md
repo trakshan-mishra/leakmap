@@ -1,6 +1,13 @@
 # Benchmark
 
-Two datasets, scored on exact (category, normalised value) pairs. The default confidence floor is `medium`, same as the CLI.
+`run_all.sh <name> <cassettes-dir> [gretel-cache]` runs everything below and writes JSON to `results/<name>/`. Committed runs:
+
+- `results/2026-10-31-before-fix/`: detectors at commit `47a536f`.
+- `results/2026-10-31-after-fix/`: after the two rule changes from the [real-traffic run](real-traffic.md).
+
+Cassette findings are stored masked.
+
+Two labelled datasets, scored on exact (category, normalised value) pairs. The default confidence floor is `medium`, same as the CLI.
 
 ## 1. Synthetic API traffic (`generate.py`, `evaluate.py`)
 
@@ -48,13 +55,13 @@ Email + card + IPv4:
 
 | | Precision | Recall | F1 |
 |---|---|---|---|
-| leakmap, floor `medium` (default) | 99.0% | 78.3% | 87.4% |
-| leakmap, floor `low` | 98.7% | 98.4% | 98.5% |
+| leakmap, floor `medium` (default) | 99.0% | 78.2% | 87.4% |
+| leakmap, floor `low` | 98.7% | 98.2% | 98.5% |
 | Presidio, threshold 0.5 (IPv6 excluded) | 95.7% | 96.5% | 96.1% |
 
 What the errors are:
 
 - **IP recall at the default floor (46%).** A bare IP with no nearby word like "client" or "ip" is low confidence, because in API traffic it is usually a server address. The report still counts these as hidden findings. At floor `low` IP recall is 98.9%.
 - **Email "false positives" (16).** 15 are real addresses Gretel did not label (`support@…`, `privacy@…`, `billing@…`); one is a typo in a Gretel label.
-- **Card misses (26).** Mostly card-valid numbers that the dataset put in "Transaction ID", "Order ID", "Booking Ref" or "nonce" fields. leakmap drops numbers after those words on purpose. One is a real miss: "credit card used for booking, 5429…".
+- **Card misses (29).** Mostly card-valid numbers that the dataset put in "Transaction ID", "Order ID", "Booking Ref" or "nonce" fields. leakmap drops numbers after those words on purpose. One is a real miss: "credit card used for booking, 5429…". It was 26 before the bare-`id` rule from the [real-traffic run](real-traffic.md); the 3 added are after "customer ID", "Dispute ID" and "Reservation ID".
 - **Secrets (P 78%, R 15%, not in the table above).** Most Gretel API keys use invented formats (`sl.`, `lnkd-`, AIza with the wrong length) or are bare hex strings that no shape-based scanner can tell apart from a hash. The two real formats missed, SendGrid `SG.` and Square `sq0atp-`, are not covered yet.

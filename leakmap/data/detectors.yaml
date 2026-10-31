@@ -14,7 +14,7 @@
 #
 # Order matters: earlier detectors claim their span first.
 
-x-numeric-negatives: &numeric_negatives '(?i)(order|invoice|inv|txn|transaction|ref|reference|tracking|awb|shipment|consignment|imei|iccid|\bsim\b|serial|isbn|ean|upc|otp|ticket|build|version|batch|sku|product|item|policy|claim|employee|emp|roll|registration|booking|pnr|lot|model|part)\b[^A-Za-z0-9]{0,6}(no\.?|num|number|id|code|#)?[^A-Za-z0-9]{0,4}$'
+x-numeric-negatives: &numeric_negatives '(?i)(order|invoice|inv|txn|transaction|ref|reference|tracking|awb|shipment|consignment|imei|iccid|\bsim\b|serial|isbn|ean|upc|otp|ticket|build|version|batch|sku|product|item|policy|claim|employee|emp|roll|registration|booking|pnr|lot|model|part|\bid)\b[^A-Za-z0-9]{0,6}(no\.?|num|number|id|code|#)?[^A-Za-z0-9]{0,4}$'
 x-numeric-negative-keys: &numeric_negative_keys '(?i)(order|invoice|txn|transaction|ref|tracking|awb|imei|iccid|serial|isbn|otp|ticket|build|version|sku|product|item|policy|claim|booking|pnr|_id$|^id$|uuid|hash|nonce|timestamp|_at$|_ts$|time|amount|price|count|size|bytes|duration|port|pid|seq|offset)'
 
 detectors:
@@ -133,12 +133,15 @@ detectors:
     hint: '(?i)ifsc'
 
 # Field-name rules: the value is personal data because of what the field is
-# called, not because of its shape. Values must be non-empty strings.
+# called, not because of its shape. Values must be non-empty strings; exclude
+# is a regex on the value that rules it out.
 fields:
   - id: person_name
     label: Person name
     key: '(?i)^(first_?name|last_?name|full_?name|given_?name|family_?name|surname|customer_?name|patient_?name|display_?name|legal_?name|father_?name|mother_?name)$'
     confidence: high
+    # APIs reuse displayName for resources (Gemini file stores): skip slugs like test-file-store.
+    exclude: '^[a-z0-9]+(?:[-_][a-z0-9]+)+$'
 
   - id: date_of_birth
     label: Date of birth

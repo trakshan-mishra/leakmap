@@ -69,7 +69,7 @@ def score(samples, predict, categories=None):
     tp, fp, fn = Counter(), Counter(), Counter()
     errors = []
     for s in samples:
-        gold = {(l["category"], norm(l["category"], l["value"])) for l in s["labels"]}
+        gold = {(lab["category"], norm(lab["category"], lab["value"])) for lab in s["labels"]}
         pred = predict(s)
         if categories:
             gold = {g for g in gold if g[0] in categories}
@@ -85,12 +85,29 @@ def score(samples, predict, categories=None):
     return tp, fp, fn, errors
 
 
+def pr(t, f, n):
+    p = t / (t + f) if t + f else 1.0
+    r = t / (t + n) if t + n else 1.0
+    f1 = 2 * p * r / (p + r) if p + r else 0.0
+    return p, r, f1
+
+
+def metrics(tp, fp, fn) -> dict:
+    out = {}
+    for c in sorted(set(tp) | set(fp) | set(fn)) + ["all"]:
+        t, f, n = (sum(x.values()) for x in (tp, fp, fn)) if c == "all" else (tp[c], fp[c], fn[c])
+        p, r, f1 = pr(t, f, n)
+        out[c] = {"tp": t, "fp": f, "fn": n, "precision": round(p, 4), "recall": round(r, 4), "f1": round(f1, 4)}
+    return out
+
+
+def save(path, meta: dict, tp, fp, fn):
+    if path:
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text(json.dumps({**meta, "metrics": metrics(tp, fp, fn)}, indent=2) + "\n")
+
+
 def table(tp, fp, fn) -> str:
-    def pr(t, f, n):
-        p = t / (t + f) if t + f else 1.0
-        r = t / (t + n) if t + n else 1.0
-        f1 = 2 * p * r / (p + r) if p + r else 0.0
-        return p, r, f1
     rows = ["| Category | Labeled | TP | FP | FN | Precision | Recall | F1 |", "|---|---|---|---|---|---|---|---|"]
     for c in sorted(set(tp) | set(fp) | set(fn)):
         p, r, f1 = pr(tp[c], fp[c], fn[c])
@@ -108,6 +125,7 @@ def main():
     ap.add_argument("--threshold", type=float, default=0.5, help="Presidio score threshold")
     ap.add_argument("--shared", action="store_true", help="only categories both engines support")
     ap.add_argument("--errors", type=int, nargs="?", const=25, default=0, help="print up to N mistakes")
+    ap.add_argument("--json", help="also write metrics to this file")
     args = ap.parse_args()
 
     samples = [json.loads(line) for line in open(DATA / f"{args.split}.jsonl")]
@@ -116,6 +134,9 @@ def main():
     tp, fp, fn, errors = score(samples, predict, cats)
     print(f"{args.engine} on {args.split} ({len(samples)} samples)\n")
     print(table(tp, fp, fn))
+    save(args.json, {"dataset": f"synthetic-{args.split}", "samples": len(samples), "engine": args.engine,
+                     "threshold": args.threshold if args.engine == "presidio" else None,
+                     "shared_only": args.shared}, tp, fp, fn)
     for kind, c, v, s in errors[: args.errors]:
         print(f"\n{kind} {c} {v!r} [{s['content_type']}] {s['body'][:220]}")
     return 0

@@ -60,6 +60,7 @@ class FieldRule:
         self.label = spec["label"]
         self.key = re.compile(spec["key"])
         self.confidence = spec["confidence"]
+        self.exclude = re.compile(spec["exclude"]) if spec.get("exclude") else None
 
 
 @lru_cache(maxsize=1)
@@ -79,7 +80,7 @@ def scan_value(value: str, key: str) -> list[tuple[str, str, str]]:
     detectors, fields = load_rules()
     out = []
     for rule in fields:
-        if rule.key.search(key) and value.strip():
+        if rule.key.search(key) and value.strip() and not (rule.exclude and rule.exclude.search(value.strip())):
             out.append((rule.category, value, rule.confidence))
     if len(value) < 5:
         return out

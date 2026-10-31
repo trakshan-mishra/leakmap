@@ -19,7 +19,7 @@ import urllib.request
 from collections import Counter
 from pathlib import Path
 
-from evaluate import norm, presidio_engine, table
+from evaluate import norm, presidio_engine, save, table
 from leakmap.detect import scan_body
 from leakmap.model import CONFIDENCE_RANK
 from leakmap.validators import ipv4_public, luhn
@@ -71,6 +71,7 @@ def main():
     ap.add_argument("--floor", choices=["low", "medium", "high"], default="medium")
     ap.add_argument("--threshold", type=float, default=0.5, help="Presidio score threshold")
     ap.add_argument("--cache", type=Path, default=Path(__file__).parent / "data" / "gretel")
+    ap.add_argument("--json", help="also write metrics to this file")
     args = ap.parse_args()
 
     download(args.cache)
@@ -102,6 +103,9 @@ def main():
     setting = f"threshold {args.threshold}" if args.engine == "presidio" else f"floor {args.floor}"
     print(f"{args.engine} on Gretel test ({n} samples, {setting})\n")
     print(table(tp, fp, fn))
+    save(args.json, {"dataset": "gretel-pii-masking-en-v1/test", "samples": n, "engine": args.engine,
+                     "threshold": args.threshold if args.engine == "presidio" else None,
+                     "floor": args.floor if args.engine == "leakmap" else None}, tp, fp, fn)
     return 0
 
 

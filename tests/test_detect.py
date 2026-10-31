@@ -36,6 +36,8 @@ def test_gstin_and_luhn():
     ("4111111111111111", "card_number", ["card"]),
     ("8.8.8.8", "client_ip", ["ip_address"]),
     ("Rahul Kumar", "first_name", ["person_name"]),
+    ("Rahul", "displayName", ["person_name"]),
+    ("my number is 9876543210", "content", ["phone_in"]),
     ("1996-04-12", "dob", ["date_of_birth"]),
 ])
 def test_detects(value, key, expected):
@@ -63,6 +65,9 @@ NOT_PERSONAL = [
     ("https://cdn.example.com/assets/app.9876543210.js", "url"),
     ("Returns the current weather for a city.", "description"),
     ("noreply", "from"),
+    # Seen in public VCR cassettes (benchmark/real-traffic.md).
+    ("test-file-search-store", "displayName"),
+    ("<MagicMock name='build_context_for_task()' id='6251497744'>", "content"),
 ]
 
 

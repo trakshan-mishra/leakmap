@@ -1,0 +1,65 @@
+{
+  "dataset": "synthetic-test",
+  "samples": 1500,
+  "engine": "presidio",
+  "threshold": 0.5,
+  "shared_only": true,
+  "metrics": {
+    "aadhaar": {
+      "tp": 116,
+      "fp": 25,
+      "fn": 4,
+      "precision": 0.8227,
+      "recall": 0.9667,
+      "f1": 0.8889
+    },
+    "card": {
+      "tp": 85,
+      "fp": 28,
+      "fn": 27,
+      "precision": 0.7522,
+      "recall": 0.7589,
+      "f1": 0.7556
+    },
+    "email": {
+      "tp": 89,
+      "fp": 0,
+      "fn": 16,
+      "precision": 1.0,
+      "recall": 0.8476,
+      "f1": 0.9175
+    },
+    "ip_address": {
+      "tp": 129,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "pan": {
+      "tp": 102,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "phone_in": {
+      "tp": 80,
+      "fp": 7,
+      "fn": 38,
+      "precision": 0.9195,
+      "recall": 0.678,
+      "f1": 0.7805
+    },
+    "all": {
+      "tp": 601,
+      "fp": 60,
+      "fn": 85,
+      "precision": 0.9092,
+      "recall": 0.8761,
+      "f1": 0.8924
+    }
+  }
+}

@@ -91,8 +91,8 @@ class Values:
         return f"{self.r.choice(self.FIRST)} {self.r.choice(self.LAST)}"
 
     def email(self):
-        f, l = self.r.choice(self.FIRST).lower(), self.r.choice(self.LAST).lower()
-        local = self.r.choice([f"{f}.{l}", f"{f}{l}{self.r.randint(1, 99)}", f"{f[0]}{l}", f"{f}_{l}", f"{f}+orders"])
+        f, s = self.r.choice(self.FIRST).lower(), self.r.choice(self.LAST).lower()
+        local = self.r.choice([f"{f}.{s}", f"{f}{s}{self.r.randint(1, 99)}", f"{f[0]}{s}", f"{f}_{s}", f"{f}+orders"])
         return f"{local}@{self.r.choice(self.DOMAINS)}"
 
     def upi(self):

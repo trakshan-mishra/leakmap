@@ -6,7 +6,6 @@ import os
 import sys
 from pathlib import Path
 
-from . import __version__
 
 DISCLAIMER = "leakmap reports what it saw during this run. It is evidence to support a privacy review, not legal advice or a compliance certificate."
 
@@ -66,7 +65,7 @@ def terminal(run: dict, home: str, color: bool | None = None) -> str:
 # --- markdown ---------------------------------------------------------------
 
 def markdown(run: dict, home: str) -> str:
-    out = [f"# leakmap report", "", f"**{headline(run, home)}**", "",
+    out = ["# leakmap report", "", f"**{headline(run, home)}**", "",
            f"Command: `{_command(run)}` · {run['created']} · leakmap {run['leakmap']}", ""]
     for p in run["processors"]:
         out.append(f"## {p['name']} ({p['country']})")

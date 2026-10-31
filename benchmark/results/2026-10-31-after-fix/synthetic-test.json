@@ -1,0 +1,121 @@
+{
+  "dataset": "synthetic-test",
+  "samples": 1500,
+  "engine": "leakmap",
+  "threshold": null,
+  "shared_only": false,
+  "metrics": {
+    "aadhaar": {
+      "tp": 120,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "address": {
+      "tp": 114,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "card": {
+      "tp": 112,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "date_of_birth": {
+      "tp": 126,
+      "fp": 0,
+      "fn": 7,
+      "precision": 1.0,
+      "recall": 0.9474,
+      "f1": 0.973
+    },
+    "email": {
+      "tp": 105,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "gstin": {
+      "tp": 97,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ifsc": {
+      "tp": 104,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ip_address": {
+      "tp": 129,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "pan": {
+      "tp": 102,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "person_name": {
+      "tp": 112,
+      "fp": 0,
+      "fn": 4,
+      "precision": 1.0,
+      "recall": 0.9655,
+      "f1": 0.9825
+    },
+    "phone_in": {
+      "tp": 118,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "secret": {
+      "tp": 122,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "upi_id": {
+      "tp": 120,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "all": {
+      "tp": 1481,
+      "fp": 0,
+      "fn": 11,
+      "precision": 1.0,
+      "recall": 0.9926,
+      "f1": 0.9963
+    }
+  }
+}
