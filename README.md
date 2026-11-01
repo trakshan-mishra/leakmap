@@ -13,8 +13,6 @@ uv tool install leakmap
 leakmap demo --open
 ```
 
-leakmap is not on PyPI yet. Until it is, install from the repo: `uv tool install git+https://github.com/trakshan-mishra/leakmap`.
-
 The demo runs a small fake support bot that calls OpenAI, Langfuse, Sentry, Mixpanel, Razorpay and an unknown CRM. Every request is answered locally, so nothing leaves your machine.
 
 ## Use it on your app
