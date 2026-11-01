@@ -38,7 +38,7 @@ The CrewAI telemetry is a real example of the problem leakmap targets. Decoded a
 
 | # | Where | Field | Category (conf.) | Value | Verdict | Rule and why it fired |
 |---|---|---|---|---|---|---|
-| 1–3 | crewAI `test_crew_memory_with_google_vertex_embedder.yaml` → oauth2.googleapis.com | `form.client_secret` | secret (high) | `d-…Ty` (24 chars) | Correct | Field rule `password` (`client_?secret`, detectors.yaml:172). The `client_id` is Google Cloud SDK's (`CLOUD_SDK_CLIENT_ID` in google-auth `_cloud_sdk.py`); whether this secret is public too is not verified |
+| 1–3 | crewAI cassette (file withheld until the project rotates the token) → oauth2.googleapis.com | `form.client_secret` | secret (high) | `d-…Ty` (24 chars) | Correct | Field rule `password` (`client_?secret`, detectors.yaml:172). The `client_id` is Google Cloud SDK's (`CLOUD_SDK_CLIENT_ID` in google-auth `_cloud_sdk.py`); whether this secret is public too is not verified |
 | 4–6 | same | `form.refresh_token` | secret (high) | `1//…VC` (103 chars) | Correct | Same rule (`refresh_?token`). A user's Google refresh token committed to a public repo. Not tested for validity |
 | 7 | crewAI `test_crew_emits_end_task_event.yaml` → api.agentops.ai | `session.jwt` | secret (medium) | `eyJhbGci…` | Correct | `jwt` pattern (detectors.yaml:60). A session token sent back to its issuer, so a credential but not a leak |
 | 8 | pydantic-ai `test_google_validated_accepts_strict_incompatible_schema.yaml` → Gemini | `contents[].parts[].functionCall.args.address.street` | address (high) | `123 Main St.` | Correct | Field rule `address` (`street`, detectors.yaml:150). Test value, but it is an address in a tool call sent to the model |
