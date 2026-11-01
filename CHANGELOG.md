@@ -4,14 +4,6 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
-### Fixed
-- Deeply nested JSON no longer crashes body scanning; it is reported as an uninspected body.
-
-### Added
-- Property and adversarial tests for the body parsers (Hypothesis), run in CI.
-- Type checking with mypy in CI.
-- Benchmark of the optional `--ner` model on 1,000 documents per dataset.
-
 ## [0.1.0] - 2026-11-01
 
 First release.
@@ -30,6 +22,8 @@ First release.
 - HTML, Markdown and JSON reports.
 - Benchmarks on four public PII datasets with rules frozen before scoring (`benchmark/independent.md`), plus recorded SDK traffic and live runs on real codebases.
 - CI on Python 3.12 and 3.13, a dependency audit from the lock file, SHA-pinned actions, Dependabot, and PyPI trusted publishing.
+- Property and adversarial tests (Hypothesis) for every body parser, and type checking with mypy, both in CI.
+- A benchmark of the optional `--ner` model on 1,000 documents per dataset.
 
 [Unreleased]: https://github.com/trakshan-mishra/leakmap/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/trakshan-mishra/leakmap/releases/tag/v0.1.0
