@@ -244,11 +244,29 @@ No other category changed. Full output: [`after-fix/rules-medium.txt`](results/2
 
 ## Optional name and address model (`--ner`)
 
-Not benchmarked yet. A smoke test found both names and both Indian addresses in two sample texts and skipped the company name. It took 0.36 s per text on a laptop CPU, plus 15.8 s to load the model once. Scoring it on the datasets above is the next step:
+The same 1,000 randomly chosen documents per dataset (fixed seed), scored once with rules only and once with `--ner`. Rules are the after-fix version. Results: [`sample1000-rules.json`](results/2026-11-01-independent/after-fix/sample1000-rules.json), [`sample1000-ner.json`](results/2026-11-01-independent/after-fix/sample1000-ner.json).
 
-```bash
-uv run --with pyarrow==21.0.0 python benchmark/independent.py --sample 1000 --ner
-```
+| Dataset | Category | Gold | Rules only: precision / recall | With `--ner`: precision / recall |
+|---|---|---:|---|---|
+| nemotron | person_name | 1,546 | 99.4% / 30.5% | 64.5% / 91.9% |
+| nemotron | address | 155 | 99.1% / 72.9% | 49.8% / 98.7% |
+| gretel-finance | person_name | 1,831 | 91.9% / 7.4% | 59.1% / 72.5% |
+| gretel-finance | address | 703 | 75.0% / 26.0% | 72.5% / 92.0% |
+| ylemis | person_name | 833 | – / 0.0% | 100% / 99.5% |
+| ylemis | address | 378 | 100% / 43.7% | 80.4% / 99.7% |
+| maskara | person_name | 619 | 100% / 21.3% | 93.6% / 98.7% |
+| maskara | address | 183 | 89.0% / 66.1% | 73.2% / 79.2% |
+
+The model finds almost every name and address. It also raises many more false alarms, which is why it is off by default.
+
+- **Names with no label:** most of the name false alarms on Nemotron (443 of 782) and Gretel finance (861 of 919) overlap no gold span. From the samples, many are names the datasets did not label, for example in greetings and signatures.
+- **Usernames and emails as names:** the model tags them as person names (Nemotron: 114 user_name, 76 email; Maskara: 26 USERNAME).
+- **Addresses:** Nemotron labels city and county separately from the street address, so a whole address that overlaps only a `city` span counts as a false alarm (87 of 154). On Ylemis and Maskara, 49 address false alarms are Aadhaar numbers that the model read as part of an address.
+- **Negatives:** with the model on, 25 of 87 Ylemis hard negatives and 5 of the 8 sampled Maskara real-world negatives produced a finding. Rules alone produced none.
+
+Use `--ner` to find out whether names leave at all, for example in an audit run. Leave it off for the CI gate.
+
+Scores for every other category are identical with and without the model.
 
 ## Regression sets
 

@@ -10,6 +10,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 ### Added
 - Property and adversarial tests for the body parsers (Hypothesis), run in CI.
 - Type checking with mypy in CI.
+- Benchmark of the optional `--ner` model on 1,000 documents per dataset.
 
 ## [0.1.0] - 2026-11-01
 

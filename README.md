@@ -83,7 +83,7 @@ None of the 1,956 negative documents in Ylemis and Maskara produced a finding.
 
 Weak spots:
 
-- **Names.** Without `--ner`, a name is found only after a label or in a name field.
+- **Names.** Without `--ner`, a name is found only after a label or in a name field. With `--ner`, name recall is 72–99%, but precision drops to 59–100% depending on the dataset ([details](benchmark/independent.md#optional-name-and-address-model---ner)).
 - **Addresses** are only partly found.
 - **Bare IPs.** At the default floor, a bare IP is hidden as low confidence.
 - **Hindi and Bengali labels.** Voter IDs labelled in those scripts are missed.
