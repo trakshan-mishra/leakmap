@@ -7,3 +7,4 @@ leakmap-demo.html
 .pytest_cache/
 benchmark/data/gretel/
 .coverage
+requirements.lock.txt

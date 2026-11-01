@@ -9,11 +9,11 @@ Run your tests through leakmap. It records every outgoing request, finds persona
 ## Try it (10 seconds, offline)
 
 ```bash
-pipx install leakmap
+uv tool install leakmap
 leakmap demo --open
 ```
 
-leakmap is not on PyPI yet. Until it is, install from the repo: `pipx install git+https://github.com/trakshan-mishra/leakmap`.
+leakmap is not on PyPI yet. Until it is, install from the repo: `uv tool install git+https://github.com/trakshan-mishra/leakmap`.
 
 The demo runs a small fake support bot that calls OpenAI, Langfuse, Sentry, Mixpanel, Razorpay and an unknown CRM. Every request is answered locally, so nothing leaves your machine.
 
@@ -29,7 +29,7 @@ leakmap check                      # exit 1 if a run has flows not in leakmap.lo
 In CI, one step does both:
 
 ```yaml
-- run: pip install leakmap
+- run: uv tool install leakmap
 - run: leakmap run --stub --check -- pytest
 ```
 

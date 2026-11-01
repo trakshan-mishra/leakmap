@@ -17,7 +17,7 @@ leakmap decrypts HTTPS traffic on your machine, so it should be judged the way y
 
 ## Dependencies
 
-CI runs `pip-audit` on every push and once a week. Dependabot opens updates for Python packages and GitHub Actions. Actions are pinned to commit SHAs.
+Dependencies are locked in `uv.lock` with hashes. CI installs from the lock (`uv sync --locked`) and runs `pip-audit` against it on every push and once a week. Dependabot opens updates for the lock file and for GitHub Actions. Actions are pinned to commit SHAs.
 
 Known advisories that are accepted, and why:
 
