@@ -63,7 +63,7 @@ On [Gretel's public PII test set](https://huggingface.co/datasets/gretelai/grete
 
 The default floor hides bare IPs with no context, which is where the recall difference comes from. On a synthetic set of Indian API traffic (Aadhaar, PAN, UPI, mobile and the rest), the held-out split scores 100% precision and 99.3% recall, against 90.9% / 87.6% for Presidio on the shared categories. I wrote that set, so treat it as a regression suite. Method, per-category tables and every error type are in [`benchmark/`](benchmark/README.md).
 
-On real traffic recorded in public test suites (pydantic-ai, crewAI, langchain, llm-anthropic: 5,109 requests to OpenAI, Anthropic, Gemini, Bedrock and others), every match was checked by hand. Before the fix, 9 of 14 default-floor matches were correct; two rules caused the rest and were fixed, which brings it to 9 of 9. That second number is tuned on the same data. Details: [`benchmark/real-traffic.md`](benchmark/real-traffic.md).
+On real traffic recorded in public test suites (pydantic-ai, crewAI, langchain, llm-anthropic: 5,109 requests to OpenAI, Anthropic, Gemini, Bedrock and others), every match was checked by hand. Before the fix, 9 of 14 default-floor matches were correct; two rules caused the rest and were fixed, which brings it to 9 of 9. That second number is tuned on the same data. Details: [`benchmark/real-traffic.md`](benchmark/real-traffic.md). Run live on real codebases (crewAI, LiteLLM, chromadb, gradio, llm-anthropic's test suite) and checked against a raw capture, it caught 27 of 27 planted values that left the machine, with no false alarms; it missed a name written in free text. See [`benchmark/real-codebases.md`](benchmark/real-codebases.md).
 
 ## Tested against real SDKs
 

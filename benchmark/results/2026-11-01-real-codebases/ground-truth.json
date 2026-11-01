@@ -1,0 +1,27 @@
+{
+  "llm-anthropic": {
+    "api.anthropic.com | requests (json)": 31,
+    "static.simonwillison.net | requests (empty)": 1
+  },
+  "crewai": {
+    "api.openai.com | MISSED name (free text)": 6,
+    "api.openai.com | caught aadhaar": 6,
+    "api.openai.com | caught email": 6,
+    "api.openai.com | caught pan": 6,
+    "api.openai.com | caught phone_in": 6,
+    "api.openai.com | requests (json)": 6,
+    "telemetry.crewai.com | requests (protobuf)": 1
+  },
+  "chromadb": {},
+  "litellm": {
+    "api.openai.com | caught card": 1,
+    "api.openai.com | caught email": 1,
+    "api.openai.com | caught phone_in": 1,
+    "api.openai.com | requests (json)": 1,
+    "raw.githubusercontent.com | requests (empty)": 1
+  },
+  "gradio": {
+    "api.gradio.app | requests (empty)": 1,
+    "huggingface.co | requests (empty)": 3
+  }
+}

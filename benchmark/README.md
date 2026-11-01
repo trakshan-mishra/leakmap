@@ -7,6 +7,8 @@
 
 Cassette findings are stored masked.
 
+Live runs on real codebases (llm-anthropic's test suite, crewAI, chromadb, LiteLLM, gradio), checked against a raw capture: [real-codebases.md](real-codebases.md).
+
 Two labelled datasets, scored on exact (category, normalised value) pairs. The default confidence floor is `medium`, same as the CLI.
 
 ## 1. Synthetic API traffic (`generate.py`, `evaluate.py`)
