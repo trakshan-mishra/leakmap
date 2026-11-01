@@ -256,6 +256,7 @@ def phone(value: str) -> bool:
     if s.startswith("00"):
         s = "+" + s[2:]
     d = _digits(s)
+    regions: list[str | None]
     if s.startswith("+"):
         regions = [None] if 8 <= len(d) <= 15 else []
     elif d.startswith("0"):

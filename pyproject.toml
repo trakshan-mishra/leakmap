@@ -22,7 +22,7 @@ classifiers = [
 dependencies = ["mitmproxy>=11.0", "phonenumbers>=9.0", "pyyaml>=6.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "httpx>=0.27"]
+dev = ["pytest>=8", "httpx>=0.27", "hypothesis>=6.170", "mypy>=2.4", "types-PyYAML>=6.0.12"]
 ner = ["gliner>=0.2.29", "torch>=2.4", "protobuf>=5"]
 
 [project.scripts]
@@ -45,6 +45,16 @@ explicit = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["leakmap"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+module = ["gliner.*"]  # optional extra, ships no type information
+ignore_missing_imports = true
 
 [tool.ruff.lint]
 # ruff's long-standing default set; pinned so ruff upgrades don't change what CI enforces.

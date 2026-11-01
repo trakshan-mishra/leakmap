@@ -39,6 +39,8 @@ jobs:
         with:
           version: "0.12.21"
       - run: uvx ruff@0.17.3 check leakmap tests benchmark
+      - run: uv sync --locked --extra dev
+      - run: uv run mypy
 
   audit:
     runs-on: ubuntu-latest

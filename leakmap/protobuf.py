@@ -29,7 +29,8 @@ def _varint(buf: bytes, i: int) -> tuple[int, int]:
 
 def _fields(buf: bytes) -> list[tuple[int, object]]:
     """Parse one message. Length-delimited values are returned as bytes."""
-    out, i = [], 0
+    out: list[tuple[int, object]] = []
+    i = 0
     while i < len(buf):
         tag, i = _varint(buf, i)
         num, wire = tag >> 3, tag & 7

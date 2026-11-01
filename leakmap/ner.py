@@ -48,7 +48,7 @@ class NER:
     def predict_many(self, texts: list[str], batch_size: int = 8):
         """[(category, start, end, confidence)] per text."""
         jobs = [(i, off, piece) for i, t in enumerate(texts) for off, piece in self.chunks(t)]
-        out = [[] for _ in texts]
+        out: list[list[tuple[str, int, int, str]]] = [[] for _ in texts]
         for b in range(0, len(jobs), batch_size):
             batch = jobs[b:b + batch_size]
             found = self.model.batch_predict_entities([p for _, _, p in batch], list(LABELS), threshold=self.threshold)

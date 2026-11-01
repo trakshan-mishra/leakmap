@@ -102,7 +102,8 @@ def load_rules() -> tuple[list[Detector], list[FieldRule]]:
 
 def labels() -> dict[str, str]:
     detectors, fields = load_rules()
-    return {r.category: r.label for r in [*detectors, *fields]}
+    rules: list[Detector | FieldRule] = [*detectors, *fields]
+    return {r.category: r.label for r in rules}
 
 
 # "First Name: Rahul", "**DOB:** 1990-01-01", "- Address = 12 MG Road"
@@ -176,32 +177,55 @@ def scan_value(value: str, key: str) -> list[tuple[str, str, str]]:
     return out
 
 
-def walk(obj, path: str = "", key: str = "", depth: int = 0):
-    """Yield (path, key, string_value) for every leaf, normalising list indexes to []."""
+def _loads(s: str):
+    """json.loads that reports nesting too deep to parse as invalid JSON."""
+    try:
+        return json.loads(s)
+    except RecursionError as e:
+        raise ValueError("JSON nested too deeply") from e
+
+
+def _children(obj, path: str, key: str, depth: int):
     if isinstance(obj, dict):
         for k, v in obj.items():
             k = str(k)
-            yield from walk(v, f"{path}.{k}" if path else k, k, depth)
-    elif isinstance(obj, list):
+            yield v, f"{path}.{k}" if path else k, k, depth
+    else:
         for v in obj:
-            yield from walk(v, f"{path}[]", key, depth)
-    elif isinstance(obj, str):
-        s = obj.strip()
-        if depth < MAX_JSON_DEPTH and s[:1] in "{[" and s[-1:] in "}]":
-            try:
-                yield from walk(json.loads(s), path, key, depth + 1)
-                return
-            except ValueError:
-                pass
-        decoded = from_base64(s) if depth < MAX_JSON_DEPTH else None
-        if decoded is not None:
-            yield from walk(decoded, f"{path}(base64)", key, depth + 1)
-            return
-        yield path, key, obj
-    elif isinstance(obj, bool) or obj is None:
-        return
-    elif isinstance(obj, (int, float)):
-        yield path, key, str(obj)
+            yield v, f"{path}[]", key, depth
+
+
+def walk(obj, path: str = "", key: str = "", depth: int = 0):
+    """Yield (path, key, string_value) for every leaf, normalising list indexes to [].
+
+    Iterative, so a deeply nested document cannot exhaust the call stack.
+    """
+    stack = [iter([(obj, path, key, depth)])]
+    while stack:
+        item = next(stack[-1], None)
+        if item is None:
+            stack.pop()
+            continue
+        obj, path, key, depth = item
+        if isinstance(obj, (dict, list)):
+            stack.append(_children(obj, path, key, depth))
+        elif isinstance(obj, str):
+            s = obj.strip()
+            if depth < MAX_JSON_DEPTH and s[:1] in "{[" and s[-1:] in "}]":
+                try:
+                    stack.append(iter([(_loads(s), path, key, depth + 1)]))
+                    continue
+                except ValueError:
+                    pass
+            decoded = from_base64(s) if depth < MAX_JSON_DEPTH else None
+            if decoded is not None:
+                stack.append(iter([(decoded, f"{path}(base64)", key, depth + 1)]))
+                continue
+            yield path, key, obj
+        elif isinstance(obj, bool) or obj is None:
+            continue
+        elif isinstance(obj, (int, float)):
+            yield path, key, str(obj)
 
 
 def _parse_body(body: bytes, content_type: str, form_fields):
@@ -240,7 +264,7 @@ def _parse_body(body: bytes, content_type: str, form_fields):
         return "form", leaves
     if "json" in ct or stripped[:1] in "{[":
         try:
-            return "json", list(walk(json.loads(stripped)))
+            return "json", list(walk(_loads(stripped)))
         except ValueError:
             pass
         # NDJSON and Sentry envelopes: one JSON document per line.
@@ -248,12 +272,12 @@ def _parse_body(body: bytes, content_type: str, form_fields):
         parsed = []
         for ln in lines:
             try:
-                parsed.append(json.loads(ln))
+                parsed.append(_loads(ln))
             except ValueError:
-                parsed = None
                 break
-        if parsed:
-            return "ndjson", [leaf for doc in parsed for leaf in walk(doc)]
+        else:
+            if parsed:
+                return "ndjson", [leaf for doc in parsed for leaf in walk(doc)]
     return "text", [("body", "", text)]
 
 
@@ -281,7 +305,7 @@ def from_base64(s: str):
     t = text.strip()
     if t[:1] in "{[":
         try:
-            return json.loads(t)
+            return _loads(t)
         except ValueError:
             pass
     return text

@@ -22,7 +22,8 @@ UNKNOWN_COUNTRY = "??"
 @lru_cache(maxsize=1)
 def _catalog() -> tuple[list[tuple[str, Vendor]], list[tuple[str, Vendor]]]:
     text = resources.files("leakmap.data").joinpath("vendors.yaml").read_text()
-    exact, globs = [], []
+    exact: list[tuple[str, Vendor]] = []
+    globs: list[tuple[str, Vendor]] = []
     for entry in yaml.safe_load(text):
         vendor = Vendor(entry["id"], entry["name"], entry["kind"], entry["country"])
         for host in entry["hosts"]:
