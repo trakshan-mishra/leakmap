@@ -13,6 +13,8 @@ pipx install leakmap
 leakmap demo --open
 ```
 
+leakmap is not on PyPI yet. Until it is, install from the repo: `pipx install git+https://github.com/trakshan-mishra/leakmap`.
+
 The demo runs a small fake support bot that calls OpenAI, Langfuse, Sentry, Mixpanel, Razorpay and an unknown CRM. Every request is answered locally, so nothing leaves your machine.
 
 ## Use it on your app
@@ -45,7 +47,7 @@ In CI, one step does both:
 | Name, date of birth, address, PIN code, gender, health fields | Field names |
 | API keys and secrets | OpenAI/Anthropic, AWS, GitHub, Slack, Google, Stripe/Razorpay live keys, private keys, JWTs, password fields |
 
-It looks inside JSON, JSON encoded inside JSON (common in tracing SDKs), NDJSON / Sentry envelopes, form bodies, multipart, query strings and **OpenTelemetry protobuf** (Langfuse, Logfire, Arize, Traceloop). Detectors live in [`leakmap/data/detectors.yaml`](leakmap/data/detectors.yaml); vendors in [`leakmap/data/vendors.yaml`](leakmap/data/vendors.yaml) (120 companies).
+It looks inside JSON, JSON encoded inside JSON (common in tracing SDKs), NDJSON / Sentry envelopes, form bodies, multipart, query strings and **OpenTelemetry protobuf** (Langfuse, Logfire, Arize, Traceloop). Detectors live in [`leakmap/data/detectors.yaml`](leakmap/data/detectors.yaml); vendors in [`leakmap/data/vendors.yaml`](leakmap/data/vendors.yaml) (124 companies).
 
 Precision comes first: a check that raises false alarms gets removed from CI. The test suite includes everyday payloads (UUIDs, trace IDs, timestamps, order IDs, tool schemas) that must produce no findings.
 
