@@ -9,7 +9,7 @@ import re
 import time
 from functools import lru_cache
 from importlib import resources
-from urllib.parse import parse_qsl
+from urllib.parse import parse_qsl, unquote
 
 import yaml
 
@@ -188,14 +188,19 @@ def walk_text(text: str, path: str, key: str):
     return [(path, key, text)]
 
 
-def scan_body(body: bytes, content_type: str, query=(), form_fields=None):
+def scan_body(body: bytes, content_type: str, query=(), form_fields=None, path: str = ""):
     """Return (inspected_kind, [(field_path, category, raw_match, confidence)]).
+
+    path is the URL path; it is percent-decoded and scanned as one value, so
+    earlier segments give context (/orders/<id>).
 
     Raw matches never leave this process; inspect_request masks them. The
     benchmark uses this directly to score exact values.
     """
     kind, leaves = _parse_body(body, content_type, form_fields)
     leaves = [(f"query.{k}", k, v) for k, v in query] + list(leaves)
+    if path:
+        leaves.insert(0, ("url.path", "path", unquote(path.split("?", 1)[0])))
     return kind, [
         (field_path, category, matched, confidence)
         for field_path, key, value in leaves
@@ -213,7 +218,7 @@ def inspect_request(
     form_fields=None,
     ts: float | None = None,
 ) -> Event:
-    kind, matches = scan_body(body, content_type, query, form_fields)
+    kind, matches = scan_body(body, content_type, query, form_fields, path)
     found: dict[tuple[str, str], Finding] = {}
     for field_path, category, matched, confidence in matches:
         slot = (category, field_path)

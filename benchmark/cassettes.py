@@ -81,7 +81,7 @@ def main():
             stats["requests"] += 1
             vendor = resolve(host)
             dest["unknown" if vendor.country == UNKNOWN_COUNTRY else "known"] += 1
-            kind, matches = scan_body(body_of(req), header(req, "content-type"), parse_qsl(url.query))
+            kind, matches = scan_body(body_of(req), header(req, "content-type"), parse_qsl(url.query), path=url.path)
             kinds[kind] += 1
             for field, category, raw, confidence in matches:
                 found[(category, confidence)] += 1

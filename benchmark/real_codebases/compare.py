@@ -31,7 +31,8 @@ for name in names:
         body = base64.b64decode(r["body"])
         if body[:2] == b"\x1f\x8b":
             body = gzip.decompress(body)
-        kind, matches = scan_body(body, r["ct"], parse_qsl(urlsplit(r["path"]).query))
+        url = urlsplit(r["path"])
+        kind, matches = scan_body(body, r["ct"], parse_qsl(url.query), path=url.path)
         found = {(c, raw) for _, c, raw, conf in matches if CONFIDENCE_RANK[conf] >= CONFIDENCE_RANK["medium"]}
         caught = {c for c, _ in found}
         for cat, value in PLANTED.items():

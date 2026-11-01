@@ -138,3 +138,24 @@ def test_otlp_protobuf_attributes_are_named_by_key():
 
 def test_url_credentials_are_not_emails():
     assert cats('sentry_sdk.init(dsn="https://abc123@o450123.ingest.us.sentry.io/4505")') == []
+
+
+def path_findings(path):
+    event = inspect_request("GET", "api.example.com", path, [], "", b"")
+    return sorted((f.category, f.field) for f in event.findings)
+
+
+def test_personal_data_in_url_path_is_found():
+    assert path_findings("/v1/users/rahul.k%40example.com/profile") == [("email", "url.path")]
+    assert path_findings(f"/kyc/aadhaar/{AADHAAR}") == [("aadhaar", "url.path")]
+
+
+@pytest.mark.parametrize("path", [
+    "/v1/chat/completions",
+    "/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry",
+    "/repos/o/r/commits/3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "/orders/550e8400-e29b-41d4-a716-446655440000",
+    "/BerriAI/litellm/main/model_prices_and_context_window.json",
+])
+def test_ordinary_url_paths_have_no_findings(path):
+    assert path_findings(path) == []

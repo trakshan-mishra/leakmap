@@ -55,3 +55,12 @@ def test_vendor_resolution():
     assert resolve("bedrock-runtime.ap-south-1.amazonaws.com").id == "aws-bedrock"
     assert resolve("API.OpenAI.com").id == "openai"
     assert resolve("notopenai.com").kind == "unclassified"
+
+
+def test_library_telemetry_hosts_are_known():
+    # Seen in benchmark/real-codebases.md.
+    assert resolve("telemetry.crewai.com").id == "crewai"
+    assert resolve("api.gradio.app").id == "gradio"
+    assert resolve("huggingface.co").id == "huggingface"
+    assert resolve("router.huggingface.co").id == "huggingface"
+    assert resolve("raw.githubusercontent.com").id == "github"

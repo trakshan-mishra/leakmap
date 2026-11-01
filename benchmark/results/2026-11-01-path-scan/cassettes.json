@@ -1,0 +1,20 @@
+{
+  "cassettes": 2930,
+  "requests": 5109,
+  "vendor_known": 4767,
+  "vendor_unknown": 342,
+  "bodies": {
+    "json": 3264,
+    "empty": 1746,
+    "protobuf": 65,
+    "text": 26,
+    "form": 7,
+    "binary": 1
+  },
+  "matches": {
+    "address (high)": 1,
+    "ip_address (low)": 4,
+    "secret (high)": 7,
+    "secret (medium)": 1
+  }
+}

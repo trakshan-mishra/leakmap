@@ -47,7 +47,7 @@ In CI, one step does both:
 | Name, date of birth, address, PIN code, gender, health fields | Field names |
 | API keys and secrets | OpenAI/Anthropic, AWS, GitHub, Slack, Google, Stripe/Razorpay live keys, private keys, JWTs, password fields |
 
-It looks inside JSON, JSON encoded inside JSON (common in tracing SDKs), NDJSON / Sentry envelopes, form bodies, multipart, query strings and **OpenTelemetry protobuf** (Langfuse, Logfire, Arize, Traceloop). Detectors live in [`leakmap/data/detectors.yaml`](leakmap/data/detectors.yaml); vendors in [`leakmap/data/vendors.yaml`](leakmap/data/vendors.yaml) (124 companies).
+It looks inside JSON, JSON encoded inside JSON (common in tracing SDKs), NDJSON / Sentry envelopes, form bodies, multipart, query strings, URL paths and **OpenTelemetry protobuf** (Langfuse, Logfire, Arize, Traceloop). Detectors live in [`leakmap/data/detectors.yaml`](leakmap/data/detectors.yaml); vendors in [`leakmap/data/vendors.yaml`](leakmap/data/vendors.yaml) (127 companies).
 
 Precision comes first: a check that raises false alarms gets removed from CI. The test suite includes everyday payloads (UUIDs, trace IDs, timestamps, order IDs, tool schemas) that must produce no findings.
 

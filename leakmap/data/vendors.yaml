@@ -25,7 +25,7 @@
 - {id: xai, name: xAI, kind: llm, country: US, hosts: [api.x.ai]}
 - {id: cerebras, name: Cerebras, kind: llm, country: US, hosts: [api.cerebras.ai]}
 - {id: replicate, name: Replicate, kind: llm, country: US, hosts: [api.replicate.com]}
-- {id: huggingface, name: Hugging Face, kind: llm, country: US, hosts: [api-inference.huggingface.co, router.huggingface.co, "*.endpoints.huggingface.cloud"]}
+- {id: huggingface, name: Hugging Face, kind: llm, country: US, hosts: [huggingface.co, api-inference.huggingface.co, router.huggingface.co, "*.endpoints.huggingface.cloud"]}
 - {id: sarvam, name: Sarvam AI, kind: llm, country: IN, hosts: [api.sarvam.ai]}
 - {id: zhipu, name: Zhipu / Z.ai, kind: llm, country: CN, hosts: [api.z.ai, open.bigmodel.cn]}
 - {id: moonshot, name: Moonshot AI, kind: llm, country: CN, hosts: [api.moonshot.ai, api.moonshot.cn]}
@@ -74,6 +74,9 @@
 - {id: amplitude, name: Amplitude, kind: analytics, country: US, hosts: [amplitude.com]}
 - {id: segment, name: Segment, kind: analytics, country: US, hosts: [api.segment.io, cdn.segment.com, events.eu1.segmentapis.com]}
 - {id: posthog, name: PostHog, kind: analytics, country: US, hosts: [posthog.com]}
+# Library telemetry: sent by the package itself, not by your code.
+- {id: crewai, name: CrewAI, kind: analytics, country: US, hosts: [telemetry.crewai.com, app.crewai.com]}
+- {id: gradio, name: Gradio (Hugging Face), kind: analytics, country: US, hosts: [api.gradio.app]}
 - {id: google-analytics, name: Google Analytics, kind: analytics, country: US, hosts: [google-analytics.com, analytics.google.com]}
 - {id: firebase-analytics, name: Firebase Analytics, kind: analytics, country: US, hosts: [app-measurement.com, firebaselogging-pa.googleapis.com, firebaselogging.googleapis.com]}
 - {id: heap, name: Heap, kind: analytics, country: US, hosts: [heapanalytics.com]}
@@ -123,6 +126,7 @@
 - {id: firebase-auth, name: Firebase Auth, kind: auth, country: US, hosts: [identitytoolkit.googleapis.com, securetoken.googleapis.com]}
 
 # --- Databases, vector stores, storage ---
+- {id: github, name: GitHub, kind: storage, country: US, hosts: [github.com, api.github.com, raw.githubusercontent.com, objects.githubusercontent.com]}
 - {id: pinecone, name: Pinecone, kind: vector-db, country: US, hosts: [pinecone.io]}
 - {id: weaviate, name: Weaviate Cloud, kind: vector-db, country: NL, hosts: [weaviate.cloud, weaviate.network]}
 - {id: qdrant, name: Qdrant Cloud, kind: vector-db, country: DE, hosts: [cloud.qdrant.io]}

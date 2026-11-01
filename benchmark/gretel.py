@@ -101,6 +101,9 @@ def main():
         for c, _ in g - p:
             fn[c] += 1
     setting = f"threshold {args.threshold}" if args.engine == "presidio" else f"floor {args.floor}"
+    if n != ROWS:
+        print(f"only {n} of {ROWS} samples downloaded; run again to fetch the rest", file=sys.stderr)
+        return 1
     print(f"{args.engine} on Gretel test ({n} samples, {setting})\n")
     print(table(tp, fp, fn))
     save(args.json, {"dataset": "gretel-pii-masking-en-v1/test", "samples": n, "engine": args.engine,

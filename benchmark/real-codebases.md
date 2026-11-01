@@ -55,6 +55,20 @@ Masked leakmap events and the comparison counts: `results/2026-11-01-real-codeba
 2. **URL paths are not scanned.** Only bodies and query strings are (`detect.py`, `inspect_request`). Gradio puts telemetry event names in the path, and a library that put an email or ID there would be missed.
 3. **The vendor catalog misses common hosts:** `huggingface.co` (only Hugging Face's inference hosts are listed), `telemetry.crewai.com`, `api.gradio.app`, `raw.githubusercontent.com`. They appear as unknown hosts with country `??`.
 
+## Fixed after this run
+
+Fixed on 2026-11-01:
+- Gap 2: URL paths are now percent-decoded and scanned as one value.
+- Gap 3: added CrewAI, Gradio and GitHub, and `huggingface.co` under Hugging Face. The catalog now has 127 vendors.
+
+To support path scanning, the email rule now skips only addresses right after `//` or `:` (URL credentials) instead of after any `/`.
+
+Checks after the fix (`results/2026-11-01-path-scan/`):
+- **5,109 real cassette URLs:** 0 path matches, so no new false alarms. Body findings are identical to before. Requests to a known vendor went from 4,618 to 4,767 (93.3%).
+- **Synthetic dev/test and Gretel (5,000 documents):** all metrics identical to `results/2026-10-31-after-fix/`.
+
+Gap 1, names in free text, is still open.
+
 ## Advisories in the throwaway environments
 
 These were installed only for this test, in separate environments, and are not leakmap dependencies. Each environment was audited with pip-audit right after install.

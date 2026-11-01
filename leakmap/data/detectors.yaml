@@ -101,8 +101,9 @@ detectors:
 
   - id: email
     label: Email address
-    # Not after / or : so URL credentials (Sentry DSNs, https://key@host) are skipped.
-    pattern: '(?<![\w.+/:-])[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,24}(?![\w-])'
+    # Not right after // or : so URL credentials (Sentry DSNs, https://key@host) are
+    # skipped, while /users/<email> in a path is still found.
+    pattern: '(?<![\w.+:-])(?<!//)[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,24}(?![\w-])'
     confidence: high
     # Retina assets (icon@2x.png), git remotes and role mailboxes are not people.
     exclude: '(?i)(\.(png|jpe?g|gif|svg|webp|ico|bmp|avif|js|mjs|cjs|ts|tsx|jsx|css|scss|py|rb|go|rs|java|json|ya?ml|toml|md|txt|zip|gz|tar|pdf|html?|xml|lock|whl)$|^(git|no-?reply|do-?not-?reply|mailer-daemon|postmaster)@)'
