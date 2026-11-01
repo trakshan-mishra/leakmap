@@ -10,11 +10,13 @@
 # negative_key      field-name regex that rules the match out
 # negative_context  regex on the 40 characters before the match that rules it out
 # exclude           regex on the matched text that rules it out
+# requires_context  true: report only when hint or context confirms it (the value
+#                   alone has no checksum or shape that sets it apart)
 # Confirming evidence wins over negative evidence.
 #
 # Order matters: earlier detectors claim their span first.
 
-x-numeric-negatives: &numeric_negatives '(?i)(order|invoice|inv|txn|transaction|ref|reference|tracking|awb|shipment|consignment|imei|iccid|\bsim\b|serial|isbn|ean|upc|otp|ticket|build|version|batch|sku|product|item|policy|claim|employee|emp|roll|registration|booking|pnr|lot|model|part|\bid)\b[^A-Za-z0-9]{0,6}(no\.?|num|number|id|code|#)?[^A-Za-z0-9]{0,4}$'
+x-numeric-negatives: &numeric_negatives '(?i)(order|invoice|inv|txn|transaction|ref|reference|tracking|awb|shipment|consignment|imei|iccid|\bsim\b|serial|isbn|ean|upc|otp|ticket|build|version|batch|sku|product|item|policy|claim|employee|emp|roll|registration|booking|pnr|lot|model|part|tax|beneficiary|customer|account|acct|a/c|routing|aba|iban|cvv|cvc|\bpin|passport|licen[cs]e|voter|epic|mrn|member|\bid)\b[^A-Za-z0-9]{0,6}(no\.?|num|number|id|code|#)?[^A-Za-z0-9]{0,4}$'
 x-numeric-negative-keys: &numeric_negative_keys '(?i)(order|invoice|txn|transaction|ref|tracking|awb|imei|iccid|serial|isbn|otp|ticket|build|version|sku|product|item|policy|claim|booking|pnr|_id$|^id$|uuid|hash|nonce|timestamp|_at$|_ts$|time|amount|price|count|size|bytes|duration|port|pid|seq|offset)'
 
 detectors:
@@ -59,12 +61,164 @@ detectors:
     label: API key or secret
     pattern: '(?<![\w-])eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}(?![\w-])'
     confidence: medium
+  # Fixed-prefix tokens, mostly from the gitleaks and GitHub secret-scanning rule sets.
+  - id: vendor_token
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w-])(?:hf_[A-Za-z0-9]{34,40}|gsk_[A-Za-z0-9]{48,56}|glpat-[A-Za-z0-9_-]{20,}|npm_[A-Za-z0-9]{36}|pypi-AgEIcHlwaS5vcmc[A-Za-z0-9_-]{50,}|SG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}|sq0(?:atp|csp)-[A-Za-z0-9_-]{22,43}|shp(?:at|ca|pa|ss)_[a-fA-F0-9]{32}|xai-[A-Za-z0-9]{80}|r8_[A-Za-z0-9]{37}|dapi[0-9a-f]{32}(?:-\d)?|lin_api_[A-Za-z0-9]{40}|ntn_[A-Za-z0-9]{40,50}|dp\.pt\.[A-Za-z0-9]{43}|whsec_[A-Za-z0-9+/=]{32,}|sbp_[a-f0-9]{40}|dop_v1_[a-f0-9]{64}|pscale_(?:tkn|pw|oauth)_[A-Za-z0-9_.-]{32,}|PMAK-[a-f0-9]{24}-[a-f0-9]{34}|sntry[su]_[A-Za-z0-9+/=_]{50,}|glsa_[A-Za-z0-9]{32}_[a-f0-9]{8}|NRAK-[A-Z0-9]{27}|ATATT3[A-Za-z0-9_=-]{150,}|AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{58}|key-[0-9a-f]{32}|SK[0-9a-f]{32})(?![\w-])'
+    confidence: high
+  - id: telegram_bot_token
+    category: secret
+    label: API key or secret
+    pattern: '(?<![\w:])\d{8,10}:AA[A-Za-z0-9_-]{32,33}(?![\w-])'
+    confidence: high
+  - id: webhook_url
+    category: secret
+    label: API key or secret
+    pattern: 'https://(?:hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]{24}|discord(?:app)?\.com/api/webhooks/\d+/[\w-]{60,})'
+    confidence: high
+  - id: azure_secret
+    category: secret
+    label: API key or secret
+    pattern: '(?:AccountKey=[A-Za-z0-9+/]{86}==|(?<![\w~.-])[A-Za-z0-9_~.-]{3}\dQ~[A-Za-z0-9_~.-]{31,34}(?![\w~.-]))'
+    confidence: high
+  - id: connection_string
+    category: secret
+    label: API key or secret
+    # Database and broker URLs with a password in them.
+    pattern: '(?i)\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|rediss?|amqps?|mssql|sqlserver|clickhouse)://[^\s:/@"'']+:[^\s@/"'']{3,}@[^\s/"'']+'
+    confidence: high
+    exclude: '(?i):(?:password|pass|secret|changeme|\*+|x+|<[^>]*>|\$\{[^}]*\}|\{[^}]*\}|%\([^)]*\)s)@'
+  - id: bearer_token
+    category: secret
+    label: API key or secret
+    pattern: '(?<=[Bb]earer )[A-Za-z0-9._~+/-]{20,}=*'
+    confidence: medium
+    exclude: '(?i)^(?:x+|\*+|your|token|<|\$\{)'
+  # A value right after "password:", "api_key=", "token is" ... Shape alone says nothing.
+  - id: labelled_secret
+    category: secret
+    label: API key or secret
+    # No "=" inside, so KEY=value lines split at the key (base64 padding is allowed at the end).
+    # Markdown bold and trailing ".", ")", ":" around the value are not part of it.
+    pattern: '(?<![^\s:=''"`(>|*])(?!\*\*)(?!(?<=\*)\*)[^\s''"`<>|,;=]{6,200}=*(?<![.*):])(?![^\s,;''"`)<|*.:])'
+    confidence: high
+    requires_context: true
+    context: '(?i)(?:(?:\b|_)(?:api[ _-]?key|apikey|secret(?:[ _-]?key)?|access[ _-]?(?:key|token)|auth[ _-]?token|refresh[ _-]?token|token|password|passwd|passphrase|pwd|passcode|client[ _-]?secret|credentials?|(?<=_)key)\b[''"`*_]*>?\s*(?:[:=|,]|=>|\bis\b)?[\s*_]*[''"`]?(?:bearer\s+)?|(?:\b|_)pass\s*[:=]\s*[''"`]?)$'
+    # Words, code identifiers and placeholders, not secrets.
+    exclude: '(?i)^(?:[a-z]+[^a-z0-9]*|[a-z]+(?:[._-][a-z]+)+|[a-z_]+\(\)|\(.*|\[.*\]|\{.*\}|\$\{.*|%.*%|none|null|nil|true|false|undefined|required|optional|redacted|hidden|masked|example|placeholder|changeme|your[\w-]*|x+|\*+|\.+|-+|n/a)$'
+
+  # --- bank, tax and document numbers ---
+  - id: iban
+    label: IBAN
+    pattern: '(?<![A-Za-z0-9])[A-Z]{2}\d{2}(?:[ -]?[A-Z0-9]{4}){2,7}(?:[ -]?[A-Z0-9]{1,4})?(?![A-Za-z0-9])'
+    validator: iban
+    confidence: high
+  - id: ssn
+    label: US Social Security number
+    pattern: '(?<![\w-])\d{3}[- ]\d{2}[- ]\d{4}(?![\w-])(?![ -]\d)'
+    validator: ssn
+    confidence: medium
+    hint: '(?i)(ssn|social_?security)'
+    context: '(?i)(ssn|social security|soc\.? ?sec)\b[^0-9]{0,20}$'
+    negative_context: *numeric_negatives
+    negative_key: *numeric_negative_keys
+  - id: ssn_bare
+    category: ssn
+    label: US Social Security number
+    pattern: '(?<![\w-])\d{9}(?![\w-])'
+    validator: ssn
+    confidence: high
+    requires_context: true
+    hint: '(?i)(ssn|social_?security)'
+    context: '(?i)(ssn|social security|soc\.? ?sec)\b[^0-9]{0,20}$'
+  - id: tax_id
+    label: Tax ID
+    # US EIN / ITIN and India TAN; a bare EIN shape is too common to report without a label.
+    pattern: '(?<![\w-])(?:\d{2}-\d{7}|9\d{2}-?(?:5\d|6[0-5]|7\d|8[0-8]|9[0-24-9])-?\d{4}|[A-Z]{4}\d{5}[A-Z]|(?=(?:[A-Z-]*\d){6})[A-Z0-9][A-Z0-9-]{6,15})(?![\w-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)(^ein$|^tin$|tax_?id|itin|^tan$|employer_?id)'
+    context: '(?i)(\bein\b|\btin\b|\bitin\b|\btan\b|tax ?(?:payer )?(?:id|identification)(?: number| no\.?)?|employer identification(?: number)?|federal tax)[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+  - id: bank_account
+    label: Bank account number
+    pattern: '(?<![\w-])(?=[A-Z-]*\d)(?=(?:[A-Z-]*\d){5})[A-Z0-9][A-Z0-9-]{5,22}(?![\w-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)(account_?(no|num|number)$|acct_?(no|num|number)?$|bank_?account|^bban$)'
+    context: '(?i)(\baccount|\bacct|\ba/c|\bbban|bank ac(?:count)?)[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9.\n]{0,8}$'
+  - id: bank_routing
+    label: US bank routing number
+    pattern: '(?<![\w-])\d{9}(?![\w-])'
+    validator: aba_routing
+    confidence: high
+    requires_context: true
+    hint: '(?i)(routing|aba|rtn)'
+    context: '(?i)(routing|\baba\b|\brtn\b|transit)[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+  - id: cvv
+    label: Card security code
+    pattern: '(?<![\w-])\d{3,4}(?![\w-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)^(cvv2?|cvc2?|csc|security_?code|card_?verification)$'
+    context: '(?i)(cvv2?|cvc2?|\bcsc\b|security code|card verification(?: value| code)?)[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+  - id: postal_code
+    label: PIN / postal code
+    pattern: '(?<![\w-])(?:[1-9]\d{5}|\d{5}(?:-\d{4})?)(?![\w-])'
+    confidence: medium
+    requires_context: true
+    # In an Indian address "PIN" alone is the postal code: "Jayanagar, Bengaluru, Karnataka PIN 560011".
+    context: '(?i:pin ?code|pincode|postal ?code|post ?code|zip(?: ?code)?)[^A-Za-z0-9]{0,6}$|,\s*[A-Z][a-z]+(?: [A-Z][a-z]+)?,?\s+PIN\b[\s:.-]{0,3}$'
+  - id: account_pin
+    label: PIN
+    pattern: '(?<![\w-])\d{4,6}(?![\w-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)^(pin|m?pin_?(no|number|code)?|atm_?pin|upi_?pin|account_?pin)$'
+    # "PIN code" is a postal code in India.
+    context: '(?i)\bm?pin\b(?!\s*code)[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+    negative_context: ',\s*[A-Z][a-z]+(?: [A-Z][a-z]+)?,?\s+PIN\b[\s:.-]{0,3}$'
+  - id: passport
+    label: Passport number
+    pattern: '(?<![A-Za-z0-9])(?:[A-Z]{1,2}\d{6,9}|[A-Z]\d{2} ?\d{5}|\d{9})(?![A-Za-z0-9])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)passport'
+    context: '(?i)(?:passport|\bpp)\b[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+  - id: health_id
+    label: Health record or insurance ID
+    pattern: '(?<![A-Za-z0-9-])(?=[A-Z-]*\d)(?=(?:[A-Z-]*\d){3})[A-Z0-9][A-Z0-9-]{4,24}(?![A-Za-z0-9-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)(^mrn$|medical_?record|patient_?id|abha|health_?id|beneficiary|member_?id|insurance_?id|uhid)'
+    context: '(?i)(\bmrn\b|medical record(?: number| no\.?| #)?|patient (?:id|no\.?|number)|health (?:plan|insurance)[a-z ]{0,25}?(?:id|number|no\.?)|beneficiary (?:id|number|no\.?)|member (?:id|number)|\babha\b(?: number| id| no\.?)?|\buhid\b|insurance (?:id|number))[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+  - id: abha
+    category: health_id
+    label: Health record or insurance ID
+    # Ayushman Bharat Health Account number, written 91-1234-5678-9012.
+    pattern: '(?<![\w-])\d{2}-\d{4}-\d{4}-\d{4}(?![\w-])'
+    confidence: medium
+    context: '(?i)(abha|health id|ayushman)[^0-9]{0,20}$'
+  - id: date_of_birth
+    label: Date of birth
+    pattern: '(?<![\w/.-])(?:\d{1,2}[/.-]\d{1,2}[/.-](?:19|20)\d{2}|(?:19|20)\d{2}[/.-]\d{1,2}[/.-]\d{1,2}|\d{1,2}(?:st|nd|rd|th)? (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*,? (?:19|20)\d{2}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2}(?:st|nd|rd|th)?,? (?:19|20)\d{2})(?![\w/-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)^(dob|date_?of_?birth|birth_?date|birthday)$'
+    context: '(?i)(\bborn\b|birth|\bdob\b|d\.o\.b|birthday|जन्म)[^0-9]{0,20}$'
+
+  - id: street_address
+    category: address
+    label: Postal address
+    # House number, one to four capitalised words, and a street type.
+    pattern: '(?<![\w/-])\d{1,5}[A-Za-z]?,? (?:[A-Z][a-z]+\.? ){1,4}(?:Street|St|Road|Rd|Avenue|Ave|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Place|Pl|Way|Terrace|Ter|Parkway|Pkwy|Highway|Hwy|Circle|Cir|Square|Sq|Marg|Nagar|Colony|Layout|Strasse|Straße|Weg|Rue|Calle|Via)\b\.?(?: #?\d+[A-Za-z-]*)?'
+    confidence: medium
 
   # --- Indian identifiers ---
   - id: aadhaar
     label: Aadhaar number
     # \w and - boundaries keep UUID tails and hex ids from matching.
-    pattern: '(?<![\w-])(?<!\d )(?<!\d-)[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}(?![\w@-])(?![ -]\d)'
+    pattern: '(?<![\w+-])(?<!\d )(?<!\d-)[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}(?![\w@-])(?![ -]\d)'
     validator: verhoeff
     confidence: high
     context: '(?i)(aadhaa?r|aadhar|uidai|\buid\b|आधार)[^0-9]{0,25}$'
@@ -85,6 +239,14 @@ detectors:
     # 4th character is the holder type (P = person, C = company, ...).
     pattern: '(?<![A-Za-z0-9])[A-Z]{3}[ABCFGHJLPT][A-Z]\d{4}[A-Z](?![A-Za-z0-9])'
     confidence: high
+  - id: pan_labelled
+    category: pan
+    label: PAN
+    pattern: '(?i)(?<![A-Za-z0-9])[a-z]{3}[abcfghjlpt][a-z] ?\d{4} ?[a-z](?![A-Za-z0-9])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)^pan(_?(no|number|card))?$'
+    context: '(?i)(\bpan\b|permanent account number)(?:\s*card)?[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
 
   - id: card
     label: Payment card number
@@ -96,7 +258,7 @@ detectors:
 
   - id: upi_id
     label: UPI ID
-    pattern: '(?<![\w.-])[\w.-]{2,64}@(?:ok(?:axis|sbi|hdfcbank|icici|bizaxis)|ybl|ibl|axl|paytm|ptyes|ptaxis|pthdfc|ptsbi|upi|apl|yapl|fbl|kotak|icici|sbi|hdfcbank|axisbank|axisb|jupiteraxis|fam|freecharge|slc|tapicici|waaxis|wahdfcbank|wasbi|waicici|abfspay|ikwik|airtel|jio|indus|pnb|barodampay|boi|cnrb|idfcbank|yesbank|dbs|rbl|federal|kbl|aubank|equitas)(?![\w-])(?!\.\w)'
+    pattern: '(?<![\w.-])[\w.-]{2,64}@(?:ok(?:axis|sbi|hdfcbank|icici|bizaxis)|ybl|ibl|axl|paytm|ptyes|ptaxis|pthdfc|ptsbi|upi|apl|yapl|fbl|kotak|icici|sbi|hdfcbank|axisbank|axisb|jupiteraxis|fam|freecharge|slc|tapicici|waaxis|wahdfcbank|wasbi|waicici|abfspay|ikwik|airtel|jio|indus|pnb|barodampay|boi|cnrb|idfcbank|idfcfirst|yesbank|yesbankltd|dbs|rbl|federal|kbl|aubank|equitas|kmbl|rapl|sliceaxis|naviaxis|superyes|unionbankofindia|uboi|cboi|mahb|idbi|iob|indianbank|ucobank|kvb|tmb|hsbc|citi|postbank|dlb|csbpay|dcb|bandhan|mairtel|payzapp|pockets|timecosmos)(?![\w-])(?!\.\w)'
     confidence: high
 
   - id: email
@@ -133,9 +295,155 @@ detectors:
     context: '(?i)(ifsc|bank|branch)[^A-Za-z0-9]{0,10}$'
     hint: '(?i)ifsc'
 
+  - id: phone
+    label: Phone number
+    # Written with + or separators, and valid under the numbering plan.
+    pattern: '(?<![\w+/.#:$-])(?:(?:\+|\b00)\d{1,3}[ .-]?)?(?:\(\d{1,5}\)[ .-]?|\(0\)[ .-]?)*\d{1,5}(?:[ .-]\d{1,8}){1,5}(?![\w@-])(?![.:/]\d)|(?<![\w+])\+\d{8,15}(?!\w)'
+    validator: phone
+    confidence: medium
+    # Dates, and decimals mixed with spaces (SVG paths, coordinates lists).
+    exclude: '^(?:\d{1,2}[-/.]\d{1,2}[-/.](?:19|20)\d{2}|(?:19|20)\d{2}[-/.]\d{1,2}[-/.]\d{1,2})$|^(?=.*\d\.\d)(?=.*\d \d)'
+    hint: '(?i)(phone|mobile|msisdn|contact|whatsapp|cell|fax|tel)'
+    context: '(?i)(phone|mobile|\bmob\b|call|contact|whatsapp|\bcell\b|\btel\b|\bsms\b|\bfax\b|msisdn|reach (?:me|us)|text me|\bph\b)[^0-9]{0,20}$'
+    negative_context: *numeric_negatives
+    negative_key: *numeric_negative_keys
+  - id: phone_bare
+    category: phone
+    label: Phone number
+    pattern: '(?<![\w+-])\d{10,11}(?![\w-])'
+    validator: phone
+    confidence: high
+    requires_context: true
+    hint: '(?i)(phone|mobile|msisdn|contact|whatsapp|cell|fax|tel)'
+    context: '(?i)(phone|mobile|\bmob\b|call|contact|whatsapp|\bcell\b|\btel\b|\bsms\b|\bfax\b|msisdn|reach (?:me|us)|text me|\bph\b)[^0-9]{0,20}$'
+
+  - id: mac_address
+    label: MAC address
+    pattern: '(?<![\w:.-])[0-9A-Fa-f]{2}(?:([:-])[0-9A-Fa-f]{2})(?:\1[0-9A-Fa-f]{2}){4}(?![\w:-])(?!\.\w)'
+    validator: mac
+    confidence: medium
+  - id: ipv6
+    category: ip_address
+    label: Public IP address
+    pattern: '(?<![\w:.])(?:[0-9A-Fa-f]{1,4}:){1,7}(?::|(?::[0-9A-Fa-f]{1,4}){1,7}|[0-9A-Fa-f]{1,4})(?![\w:.])'
+    validator: ipv6_global
+    confidence: low
+    hint: '(?i)(^|_)(ip|ip_?address|ipv6|client_?ip|remote_?addr|x_forwarded_for|user_?ip)$'
+    context: '(?i)(\bip\b|ipv6|ip address|client|remote addr|forwarded|from ip|login from|source)[^0-9A-Fa-f]{0,15}$'
+
+  # --- vehicles and other documents ---
+  - id: vin
+    label: Vehicle identification number
+    pattern: '(?<![A-Za-z0-9])(?=[A-HJ-NPR-Z0-9]*[A-HJ-NPR-Z])(?=[A-HJ-NPR-Z0-9]*\d)[A-HJ-NPR-Z0-9]{17}(?![A-Za-z0-9])'
+    validator: vin
+    confidence: medium
+    context: '(?i)(\bvin\b|vehicle identification|chassis)(?:[^A-Za-z0-9]{0,20}|[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8})$'
+  - id: vin_labelled
+    category: vin
+    label: Vehicle identification number
+    # Outside North America the 9th character is not a check digit.
+    pattern: '(?<![A-Za-z0-9])(?=[A-HJ-NPR-Z0-9]*[A-HJ-NPR-Z])(?=[A-HJ-NPR-Z0-9]*\d)[A-HJ-NPR-Z0-9]{11,17}(?![A-Za-z0-9])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)(^vin$|vehicle_?id|chassis)'
+    context: '(?i)(\bvin\b|vehicle identification(?: number)?|vehicle id(?:entifier)?|chassis(?: number| no\.?)?)[^A-Za-z0-9]{0,8}$'
+  - id: vehicle_reg_in
+    category: vehicle_reg
+    label: Vehicle registration
+    # State or UT code, RTO number, series letters, number; BH series.
+    pattern: '(?<![A-Za-z0-9])(?:(?:AN|AP|AR|AS|BR|CH|CG|DD|DL|DN|GA|GJ|HP|HR|JH|JK|KA|KL|LA|LD|MH|ML|MN|MP|MZ|NL|OD|OR|PB|PY|RJ|SK|TN|TR|TS|UK|UP|WB)[ -]?\d{1,2}[ -]?[A-Z]{1,3}[ -]?\d{1,4}|\d{2}[ -]?BH[ -]?\d{4}[ -]?[A-Z]{1,2})(?![A-Za-z0-9])'
+    validator: vehicle_in
+    confidence: medium
+    context: '(?i)(vehicle|registration|reg\.? no|number plate|licen[cs]e plate|\bcar\b|\bbike\b|scooter|truck|gaadi)(?:[^A-Za-z0-9]{0,20}|[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8})$'
+  - id: license_plate
+    category: vehicle_reg
+    label: Vehicle registration
+    pattern: '(?<![A-Za-z0-9-])(?=[A-Z -]*\d)(?=[A-Z0-9 -]{4,12}(?![A-Za-z0-9-]))[A-Z0-9]{1,4}(?:[ -]?[A-Z0-9]{1,5}){1,3}(?![A-Za-z0-9-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)(licen[cs]e_?plate|plate_?(no|number)|vehicle_?(reg|number)|registration_?(no|number))'
+    context: '(?i)(licen[cs]e plate|plate (?:no\.?|number|#)|number plate|registration (?:no\.?|number|plate)|vehicle (?:no\.?|number|reg\w*))[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+  - id: driving_licence_in
+    category: driving_licence
+    label: Driving licence number
+    pattern: '(?<![A-Za-z0-9])(?:AN|AP|AR|AS|BR|CH|CG|DD|DL|DN|GA|GJ|HP|HR|JH|JK|KA|KL|LA|LD|MH|ML|MN|MP|MZ|NL|OD|OR|PB|PY|RJ|SK|TN|TR|TS|UK|UP|WB)[ -]?\d{2}[ -]?(?:19|20)\d{2}[ -]?\d{7}(?![A-Za-z0-9])'
+    confidence: medium
+    context: '(?i)(\bdl\b|driving|licen[cs]e)(?:[^A-Za-z0-9]{0,20}|[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8})$'
+  - id: driving_licence
+    label: Driving licence number
+    pattern: '(?<![A-Za-z0-9-])(?=[A-Z-]*\d)(?=(?:[A-Z-]*\d){4})[A-Z0-9][A-Z0-9-]{5,18}(?![A-Za-z0-9-])'
+    confidence: high
+    requires_context: true
+    hint: '(?i)(driv\w*_?licen[cs]e|^dl_?(no|number)?$|licen[cs]e_?(no|number))'
+    context: '(?i)(driv(?:er''?s?|ing)\s*licen[cs]e|\bdl\b)[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+  - id: voter_id
+    label: Voter ID (EPIC)
+    pattern: '(?<![A-Za-z0-9])[A-Z]{3}\d{7}(?![A-Za-z0-9])'
+    confidence: low
+    hint: '(?i)(voter|epic)'
+    context: '(?i)(voter|\bepic\b|electoral|elector|मतदाता)(?:[^A-Za-z0-9]{0,20}|[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8})$'
+
+  # --- money and location ---
+  - id: crypto_wallet
+    label: Crypto wallet address
+    pattern: '(?<![A-Za-z0-9])(?:[13][1-9A-HJ-NP-Za-km-z]{25,34}|bc1[02-9ac-hj-np-z]{11,71})(?![A-Za-z0-9])'
+    validator: btc_address
+    confidence: high
+  - id: eth_wallet
+    category: crypto_wallet
+    label: Crypto wallet address
+    pattern: '(?<![A-Za-z0-9])0x[0-9a-fA-F]{40}(?![A-Za-z0-9])'
+    confidence: low
+    hint: '(?i)(wallet|address|from|to|recipient)'
+    context: '(?i)(wallet|\beth\b|ethereum|address|send to|pay to)[^A-Za-z0-9]{0,15}$'
+  - id: coordinates
+    label: GPS coordinates
+    pattern: '(?<![\w.])-?\d{1,2}\.\d{3,}\s*°?\s*[NS],?\s*-?\d{1,3}\.\d{3,}\s*°?\s*[EW](?!\w)'
+    validator: latlng
+    confidence: medium
+  - id: coordinates_pair
+    category: coordinates
+    label: GPS coordinates
+    # Bare float pairs are everywhere (embeddings), so they need a label.
+    pattern: '(?<![\w.])-?\d{1,2}\.\d{3,},\s*-?\d{1,3}\.\d{3,}(?!\w|\.\d)'
+    validator: latlng
+    confidence: high
+    requires_context: true
+    context: '(?i)(\blat|\blng\b|\blon\b|longitude|coordinates?|\bgps\b|geo ?location|location)[^0-9-]{0,15}$'
+  - id: coordinate_labelled
+    category: coordinates
+    label: GPS coordinates
+    pattern: '(?<![\w.])-?\d{1,3}\.\d{3,}(?!\w|\.\d)'
+    confidence: high
+    requires_context: true
+    context: '(?i)\b(?:lat(?:itude)?|lng|lon(?:g(?:itude)?)?)\b[^A-Za-z0-9-]{0,6}$'
+  - id: swift_bic
+    label: Bank SWIFT/BIC code
+    pattern: '(?<![A-Za-z0-9])[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}(?:[A-Z0-9]{3})?(?![A-Za-z0-9])'
+    validator: swift_bic
+    confidence: high
+    requires_context: true
+    hint: '(?i)(swift|bic)'
+    context: '(?i)(swift|\bbic\b)(?:[/ ](?:bic|swift))?(?: code)?(?:\s*is\b)?[^A-Za-z0-9]{0,15}$'
+  - id: upi_id_labelled
+    category: upi_id
+    label: UPI ID
+    # Handles not on the known list, when the text says it is a UPI address.
+    pattern: '(?<![\w.-])[\w.-]{2,64}@[A-Za-z]{2,20}(?![\w-])(?!\.\w)'
+    confidence: high
+    requires_context: true
+    hint: '(?i)(upi|vpa)'
+    context: '(?i)\b(?:upi|vpa|gpay|google pay|phonepe|paytm|bhim|pay(?:ments?)?(?: (?:to|via|at|on))?)\b(?: id| address| handle)?[*_]*(?:\s*(?:no\.?|num(?:ber)?|#|id|code))?[*_]*(?:,?\s*(?:which\s+)?(?:is|was|of|being)\b)?[^A-Za-z0-9]{0,8}$'
+
 # Field-name rules: the value is personal data because of what the field is
-# called, not because of its shape. Values must be non-empty strings; exclude
-# is a regex on the value that rules it out.
+# called, not because of its shape. Values must be non-empty strings.
+#
+# Keys also come from "Label: value" lines and markdown tables inside text, as
+# in a form pasted into a prompt; the label is lower-cased with _ for spaces.
+#
+# value     regex the value must match
+# exclude   regex on the value that rules it out
+# labelled  true: only for labels inside text, not JSON keys
 fields:
   - id: person_name
     label: Person name
@@ -144,6 +452,16 @@ fields:
     # APIs reuse displayName for resources (Gemini file stores): skip slugs like test-file-store.
     exclude: '^[a-z0-9]+(?:[-_][a-z0-9]+)+$'
 
+  - id: person_name_labelled
+    category: person_name
+    label: Person name
+    # "name" in JSON is usually a tool, span or project; in a form it is a person.
+    key: '(?i)^(name|applicant(?:_name)?|patient|customer|account_?holder(?:_name)?|holder_?name|beneficiary(?:_name)?|employee_?name|guardian(?:_name)?|nominee(?:_name)?|contact_?name|emergency_?contact)$'
+    value: '^(?:(?:Mr|Mrs|Ms|Dr|Shri|Smt)\.? )?[A-Z][a-z''.-]+(?: [A-Z][a-z''.-]*){0,3}$'
+    labelled: true
+    exclude: '(?i)\b(?:inc|ltd|llc|llp|corp|corporation|company|co|pvt|limited|group|holdings|technologies|solutions|services|systems|industries|enterprises|bank|hospital|clinic|university|school|college|foundation|trust|associates|partners|logistics|hauliers|traders|agency)\.?$'
+    confidence: high
+
   - id: date_of_birth
     label: Date of birth
     key: '(?i)^(dob|date_?of_?birth|birth_?date|birthday)$'
@@ -151,8 +469,14 @@ fields:
 
   - id: address
     label: Postal address
-    key: '(?i)^(address|street|street_?address|address_?line_?\d?|home_?address|postal_?address|billing_?address|shipping_?address)$'
+    key: '(?i)^(address|street|street_?address|address_?line_?\d?|home_?address|postal_?address|billing_?address|shipping_?address|residential_?address|permanent_?address|current_?address|mailing_?address|correspondence_?address)$'
     confidence: high
+
+  - id: coordinates
+    label: GPS coordinates
+    key: '(?i)^(lat|latitude|lng|lon|long|longitude|coordinates|geo_?location|gps)$'
+    value: '^-?\d{1,3}(?:\.\d+)?(?:\s*,\s*-?\d{1,3}(?:\.\d+)?)?$'
+    confidence: medium
 
   - id: postal_code
     label: PIN / postal code

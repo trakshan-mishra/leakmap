@@ -19,10 +19,11 @@ classifiers = [
   "Topic :: Security",
   "Topic :: Software Development :: Testing",
 ]
-dependencies = ["mitmproxy>=11.0", "pyyaml>=6.0"]
+dependencies = ["mitmproxy>=11.0", "phonenumbers>=9.0", "pyyaml>=6.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27"]
+ner = ["gliner>=0.2.29", "torch>=2.4", "protobuf>=5"]
 
 [project.scripts]
 leakmap = "leakmap.cli:main"
@@ -32,6 +33,15 @@ Homepage = "https://github.com/trakshan-mishra/leakmap"
 
 [tool.hatch.build.targets.wheel]
 packages = ["leakmap"]
+
+# torch from the CPU-only index: the default Linux wheel pulls in ~2 GB of CUDA.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

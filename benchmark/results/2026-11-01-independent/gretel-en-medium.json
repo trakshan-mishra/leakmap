@@ -1,0 +1,49 @@
+{
+  "dataset": "gretel-pii-masking-en-v1/test",
+  "samples": 5000,
+  "engine": "leakmap",
+  "threshold": null,
+  "floor": "medium",
+  "metrics": {
+    "card": {
+      "tp": 365,
+      "fp": 1,
+      "fn": 34,
+      "precision": 0.9973,
+      "recall": 0.9148,
+      "f1": 0.9542
+    },
+    "email": {
+      "tp": 1047,
+      "fp": 16,
+      "fn": 2,
+      "precision": 0.9849,
+      "recall": 0.9981,
+      "f1": 0.9915
+    },
+    "ip_address": {
+      "tp": 408,
+      "fp": 7,
+      "fn": 478,
+      "precision": 0.9831,
+      "recall": 0.4605,
+      "f1": 0.6272
+    },
+    "secret": {
+      "tp": 64,
+      "fp": 32,
+      "fn": 55,
+      "precision": 0.6667,
+      "recall": 0.5378,
+      "f1": 0.5953
+    },
+    "all": {
+      "tp": 1884,
+      "fp": 56,
+      "fn": 569,
+      "precision": 0.9711,
+      "recall": 0.768,
+      "f1": 0.8577
+    }
+  }
+}

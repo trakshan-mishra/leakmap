@@ -59,3 +59,9 @@ jobs:
           --ignore-vuln CVE-2026-116577
           --ignore-vuln CVE-2026-115927
           --ignore-vuln CVE-2026-116578
+      # torch comes from the PyTorch CPU index, which pip-audit cannot look up; ask OSV directly.
+      - name: torch advisories (OSV)
+        run: |
+          v=$(grep -A1 '^name = "torch"' uv.lock | sed -n 's/^version = "\([^"+]*\).*/\1/p' | head -1)
+          curl -sf https://api.osv.dev/v1/query -d "{\"package\":{\"name\":\"torch\",\"ecosystem\":\"PyPI\"},\"version\":\"$v\"}" \
+            | python3 -c "import json,sys; v=[x['id'] for x in json.load(sys.stdin).get('vulns',[])]; print('torch', '$v', v or 'no advisories'); sys.exit(bool(v))"

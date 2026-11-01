@@ -2,8 +2,8 @@
 
 This is text leakmap's author did not write, so it checks the synthetic corpus
 is not just testing itself. Only categories both sides label are scored:
-email, card, IPv4 and API keys / passwords. Gold cards that fail Luhn and
-private IPs are dropped (an LLM wrote many of them; real ones pass).
+email, card, IP addresses and API keys / passwords. Gold cards that fail Luhn and
+private or reserved IPs are dropped (an LLM wrote many of them; real ones pass).
 
     python benchmark/gretel.py                    # downloads ~4 MB on first run
     python benchmark/gretel.py --floor low        # include low-confidence matches
@@ -22,12 +22,12 @@ from pathlib import Path
 from evaluate import norm, presidio_engine, save, table
 from leakmap.detect import scan_body
 from leakmap.model import CONFIDENCE_RANK
-from leakmap.validators import ipv4_public, luhn
+from leakmap.validators import ipv4_public, ipv6_global, luhn
 
 URL = ("https://datasets-server.huggingface.co/rows?dataset=gretelai/gretel-pii-masking-en-v1"
        "&config=default&split=test&offset={}&length=100")
 ROWS = 5000
-MAP = {"email": "email", "credit_card_number": "card", "ipv4": "ip_address",
+MAP = {"email": "email", "credit_card_number": "card", "ipv4": "ip_address", "ipv6": "ip_address",
        "api_key": "secret", "password": "secret"}
 
 
@@ -59,7 +59,7 @@ def gold(entities):
     for e in entities:
         for t in e["types"]:
             cat, value = MAP.get(t), e["entity"]
-            if not cat or (cat == "card" and not luhn(value)) or (cat == "ip_address" and not ipv4_public(value.strip())):
+            if not cat or (cat == "card" and not luhn(value)) or (cat == "ip_address" and not (ipv4_public(value.strip()) or ipv6_global(value.strip()))):
                 continue
             out.add((cat, norm(cat, value)))
     return out

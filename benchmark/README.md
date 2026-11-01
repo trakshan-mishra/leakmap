@@ -4,12 +4,16 @@
 
 - `results/2026-10-31-before-fix/`: detectors at commit `47a536f`.
 - `results/2026-10-31-after-fix/`: after the two rule changes from the [real-traffic run](real-traffic.md).
+- `results/2026-11-01-independent-baseline/`: commit `ce179ae` on the four independent datasets.
+- `results/2026-11-01-independent/`: the category rewrite, rules frozen before scoring; `after-fix/` is after the held-out bugs were fixed. See [independent.md](independent.md).
 
 Cassette findings are stored masked.
 
 Live runs on real codebases (llm-anthropic's test suite, crewAI, chromadb, LiteLLM, gradio), checked against a raw capture: [real-codebases.md](real-codebases.md).
 
-Two labelled datasets, scored on exact (category, normalised value) pairs. The default confidence floor is `medium`, same as the CLI.
+Per-category scores on four public datasets I did not write (Nemotron-PII, Gretel finance, Ylemis, Maskara): [independent.md](independent.md).
+
+The two sets below are older. They are scored on exact (category, normalised value) pairs. The default confidence floor is `medium`, same as the CLI.
 
 ## 1. Synthetic API traffic (`generate.py`, `evaluate.py`)
 

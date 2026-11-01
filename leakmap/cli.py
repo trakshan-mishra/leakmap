@@ -46,7 +46,7 @@ def cmd_run(args) -> int:
     if not command:
         sys.exit("usage: leakmap run [options] -- <command> [args...]")
     config = load_config(Path(args.config))
-    code, summary = run(command, Path(args.out), stub=args.stub,
+    code, summary = run(command, Path(args.out), stub=args.stub, ner=args.ner,
                         min_confidence=config["min_confidence"], ignore_hosts=tuple(config["ignore_hosts"]))
     print(report.terminal(summary, config["home_country"]), end="")
     print(f"\n  Saved {args.out}/run.json · `leakmap report --format html` for the full report")
@@ -123,6 +123,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("run", help="run a command and record what it sends out")
     p.add_argument("--stub", action="store_true", help="answer every request locally; nothing reaches the network")
     p.add_argument("--check", action="store_true", help="after the run, compare against the baseline and fail on new flows")
+    p.add_argument("--ner", action="store_true", help="also find names and addresses with the optional model (leakmap[ner])")
     p.add_argument("--out", default=str(OUT), help="output directory (default: .leakmap)")
     p.add_argument("--config", default="leakmap.yaml")
     p.add_argument("--lock", default="leakmap.lock")

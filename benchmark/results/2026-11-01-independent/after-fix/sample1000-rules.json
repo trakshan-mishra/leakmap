@@ -1,0 +1,2081 @@
+[
+ {
+  "dataset": "nemotron",
+  "repo": "nvidia/Nemotron-PII",
+  "revision": "b70ffaf5ff39e079776134c5bf4381f00a9fd1ed",
+  "licence": "CC-BY-4.0",
+  "documents": 1000,
+  "floor": "medium",
+  "ner": false,
+  "categories": {
+   "account_pin": {
+    "gold": 81,
+    "tp": 65,
+    "fp": 0,
+    "fn": 16,
+    "precision": 100.0,
+    "precision_ci": [
+     94.4,
+     100.0
+    ],
+    "recall": 80.2,
+    "recall_ci": [
+     70.3,
+     87.5
+    ],
+    "gold_valid": 81,
+    "recall_valid": 80.2,
+    "recall_valid_ci": [
+     70.3,
+     87.5
+    ],
+    "fp_on_other_label": {}
+   },
+   "address": {
+    "gold": 155,
+    "tp": 113,
+    "fp": 1,
+    "fn": 42,
+    "precision": 99.1,
+    "precision_ci": [
+     95.2,
+     99.8
+    ],
+    "recall": 72.9,
+    "recall_ci": [
+     65.4,
+     79.3
+    ],
+    "gold_valid": 155,
+    "recall_valid": 72.9,
+    "recall_valid_ci": [
+     65.4,
+     79.3
+    ],
+    "fp_on_other_label": {
+     "coordinate": 1
+    }
+   },
+   "bank_account": {
+    "gold": 134,
+    "tp": 116,
+    "fp": 3,
+    "fn": 18,
+    "precision": 97.5,
+    "precision_ci": [
+     92.8,
+     99.1
+    ],
+    "recall": 86.6,
+    "recall_ci": [
+     79.8,
+     91.3
+    ],
+    "gold_valid": 134,
+    "recall_valid": 86.6,
+    "recall_valid_ci": [
+     79.8,
+     91.3
+    ],
+    "fp_on_other_label": {
+     "customer_id": 1,
+     "(no label)": 1,
+     "tax_id": 1
+    }
+   },
+   "bank_routing": {
+    "gold": 85,
+    "tp": 9,
+    "fp": 0,
+    "fn": 76,
+    "precision": 100.0,
+    "precision_ci": [
+     70.1,
+     100.0
+    ],
+    "recall": 10.6,
+    "recall_ci": [
+     5.7,
+     18.9
+    ],
+    "gold_valid": 9,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     70.1,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "card": {
+    "gold": 112,
+    "tp": 17,
+    "fp": 0,
+    "fn": 95,
+    "precision": 100.0,
+    "precision_ci": [
+     81.6,
+     100.0
+    ],
+    "recall": 15.2,
+    "recall_ci": [
+     9.7,
+     23.0
+    ],
+    "gold_valid": 18,
+    "recall_valid": 94.4,
+    "recall_valid_ci": [
+     74.2,
+     99.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "coordinates": {
+    "gold": 68,
+    "tp": 63,
+    "fp": 0,
+    "fn": 5,
+    "precision": 100.0,
+    "precision_ci": [
+     94.3,
+     100.0
+    ],
+    "recall": 92.6,
+    "recall_ci": [
+     83.9,
+     96.8
+    ],
+    "gold_valid": 68,
+    "recall_valid": 92.6,
+    "recall_valid_ci": [
+     83.9,
+     96.8
+    ],
+    "fp_on_other_label": {}
+   },
+   "cvv": {
+    "gold": 49,
+    "tp": 41,
+    "fp": 0,
+    "fn": 8,
+    "precision": 100.0,
+    "precision_ci": [
+     91.4,
+     100.0
+    ],
+    "recall": 83.7,
+    "recall_ci": [
+     71.0,
+     91.5
+    ],
+    "gold_valid": 49,
+    "recall_valid": 83.7,
+    "recall_valid_ci": [
+     71.0,
+     91.5
+    ],
+    "fp_on_other_label": {}
+   },
+   "date_of_birth": {
+    "gold": 194,
+    "tp": 194,
+    "fp": 5,
+    "fn": 0,
+    "precision": 97.5,
+    "precision_ci": [
+     94.3,
+     98.9
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     98.1,
+     100.0
+    ],
+    "gold_valid": 194,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     98.1,
+     100.0
+    ],
+    "fp_on_other_label": {
+     "date": 5
+    }
+   },
+   "driving_licence": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 3,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     56.2
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "date": 3
+    }
+   },
+   "email": {
+    "gold": 506,
+    "tp": 496,
+    "fp": 0,
+    "fn": 10,
+    "precision": 100.0,
+    "precision_ci": [
+     99.2,
+     100.0
+    ],
+    "recall": 98.0,
+    "recall_ci": [
+     96.4,
+     98.9
+    ],
+    "gold_valid": 501,
+    "recall_valid": 99.0,
+    "recall_valid_ci": [
+     97.7,
+     99.6
+    ],
+    "fp_on_other_label": {}
+   },
+   "gender": {
+    "gold": 84,
+    "tp": 42,
+    "fp": 7,
+    "fn": 42,
+    "precision": 85.7,
+    "precision_ci": [
+     73.3,
+     92.9
+    ],
+    "recall": 50.0,
+    "recall_ci": [
+     39.5,
+     60.5
+    ],
+    "gold_valid": 84,
+    "recall_valid": 50.0,
+    "recall_valid_ci": [
+     39.5,
+     60.5
+    ],
+    "fp_on_other_label": {
+     "(no label)": 4,
+     "occupation": 2,
+     "employee_id": 1
+    }
+   },
+   "health": {
+    "gold": 72,
+    "tp": 0,
+    "fp": 9,
+    "fn": 72,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     29.9
+    ],
+    "recall": 0.0,
+    "recall_ci": [
+     0.0,
+     5.1
+    ],
+    "gold_valid": 72,
+    "recall_valid": 0.0,
+    "recall_valid_ci": [
+     0.0,
+     5.1
+    ],
+    "fp_on_other_label": {
+     "(no label)": 9
+    }
+   },
+   "health_id": {
+    "gold": 233,
+    "tp": 209,
+    "fp": 0,
+    "fn": 24,
+    "precision": 100.0,
+    "precision_ci": [
+     98.2,
+     100.0
+    ],
+    "recall": 89.7,
+    "recall_ci": [
+     85.1,
+     93.0
+    ],
+    "gold_valid": 233,
+    "recall_valid": 89.7,
+    "recall_valid_ci": [
+     85.1,
+     93.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "id_document": {
+    "gold": 44,
+    "tp": 0,
+    "fp": 0,
+    "fn": 44,
+    "precision": null,
+    "precision_ci": null,
+    "recall": 0.0,
+    "recall_ci": [
+     0.0,
+     8.0
+    ],
+    "gold_valid": 44,
+    "recall_valid": 0.0,
+    "recall_valid_ci": [
+     0.0,
+     8.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "ip_address": {
+    "gold": 81,
+    "tp": 25,
+    "fp": 0,
+    "fn": 56,
+    "precision": 100.0,
+    "precision_ci": [
+     86.7,
+     100.0
+    ],
+    "recall": 30.9,
+    "recall_ci": [
+     21.9,
+     41.6
+    ],
+    "gold_valid": 69,
+    "recall_valid": 36.2,
+    "recall_valid_ci": [
+     25.9,
+     48.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "mac_address": {
+    "gold": 50,
+    "tp": 49,
+    "fp": 1,
+    "fn": 1,
+    "precision": 98.0,
+    "precision_ci": [
+     89.5,
+     99.6
+    ],
+    "recall": 98.0,
+    "recall_ci": [
+     89.5,
+     99.6
+    ],
+    "gold_valid": 50,
+    "recall_valid": 98.0,
+    "recall_valid_ci": [
+     89.5,
+     99.6
+    ],
+    "fp_on_other_label": {
+     "device_identifier": 1
+    }
+   },
+   "person_name": {
+    "gold": 1546,
+    "tp": 472,
+    "fp": 3,
+    "fn": 1074,
+    "precision": 99.4,
+    "precision_ci": [
+     98.2,
+     99.8
+    ],
+    "recall": 30.5,
+    "recall_ci": [
+     28.3,
+     32.9
+    ],
+    "gold_valid": 1546,
+    "recall_valid": 30.5,
+    "recall_valid_ci": [
+     28.3,
+     32.9
+    ],
+    "fp_on_other_label": {
+     "occupation": 3
+    }
+   },
+   "phone": {
+    "gold": 256,
+    "tp": 215,
+    "fp": 9,
+    "fn": 41,
+    "precision": 96.0,
+    "precision_ci": [
+     92.5,
+     97.9
+    ],
+    "recall": 84.0,
+    "recall_ci": [
+     79.0,
+     88.0
+    ],
+    "gold_valid": 215,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     98.2,
+     100.0
+    ],
+    "fp_on_other_label": {
+     "customer_id": 6,
+     "health_plan_beneficiary_number": 2,
+     "unique_id": 1
+    }
+   },
+   "postal_code": {
+    "gold": 55,
+    "tp": 19,
+    "fp": 0,
+    "fn": 36,
+    "precision": 100.0,
+    "precision_ci": [
+     83.2,
+     100.0
+    ],
+    "recall": 34.5,
+    "recall_ci": [
+     23.4,
+     47.7
+    ],
+    "gold_valid": 55,
+    "recall_valid": 34.5,
+    "recall_valid_ci": [
+     23.4,
+     47.7
+    ],
+    "fp_on_other_label": {}
+   },
+   "secret": {
+    "gold": 127,
+    "tp": 91,
+    "fp": 12,
+    "fn": 36,
+    "precision": 88.3,
+    "precision_ci": [
+     80.7,
+     93.2
+    ],
+    "recall": 71.7,
+    "recall_ci": [
+     63.3,
+     78.8
+    ],
+    "gold_valid": 127,
+    "recall_valid": 71.7,
+    "recall_valid_ci": [
+     63.3,
+     78.8
+    ],
+    "fp_on_other_label": {
+     "http_cookie": 12
+    }
+   },
+   "ssn": {
+    "gold": 64,
+    "tp": 64,
+    "fp": 11,
+    "fn": 0,
+    "precision": 85.3,
+    "precision_ci": [
+     75.6,
+     91.6
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     94.3,
+     100.0
+    ],
+    "gold_valid": 64,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     94.3,
+     100.0
+    ],
+    "fp_on_other_label": {
+     "(no label)": 5,
+     "national_id": 4,
+     "medical_record_number": 2
+    }
+   },
+   "swift_bic": {
+    "gold": 61,
+    "tp": 37,
+    "fp": 0,
+    "fn": 24,
+    "precision": 100.0,
+    "precision_ci": [
+     90.6,
+     100.0
+    ],
+    "recall": 60.7,
+    "recall_ci": [
+     48.1,
+     71.9
+    ],
+    "gold_valid": 39,
+    "recall_valid": 94.9,
+    "recall_valid_ci": [
+     83.1,
+     98.6
+    ],
+    "fp_on_other_label": {}
+   },
+   "tax_id": {
+    "gold": 14,
+    "tp": 11,
+    "fp": 0,
+    "fn": 3,
+    "precision": 100.0,
+    "precision_ci": [
+     74.1,
+     100.0
+    ],
+    "recall": 78.6,
+    "recall_ci": [
+     52.4,
+     92.4
+    ],
+    "gold_valid": 14,
+    "recall_valid": 78.6,
+    "recall_valid_ci": [
+     52.4,
+     92.4
+    ],
+    "fp_on_other_label": {}
+   },
+   "vehicle_reg": {
+    "gold": 42,
+    "tp": 38,
+    "fp": 2,
+    "fn": 4,
+    "precision": 95.0,
+    "precision_ci": [
+     83.5,
+     98.6
+    ],
+    "recall": 90.5,
+    "recall_ci": [
+     77.9,
+     96.2
+    ],
+    "gold_valid": 42,
+    "recall_valid": 90.5,
+    "recall_valid_ci": [
+     77.9,
+     96.2
+    ],
+    "fp_on_other_label": {
+     "tax_id": 2
+    }
+   },
+   "vin": {
+    "gold": 50,
+    "tp": 43,
+    "fp": 0,
+    "fn": 7,
+    "precision": 100.0,
+    "precision_ci": [
+     91.8,
+     100.0
+    ],
+    "recall": 86.0,
+    "recall_ci": [
+     73.8,
+     93.0
+    ],
+    "gold_valid": 1,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     20.7,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   }
+  },
+  "unmapped_labels": {
+   "date": {
+    "gold": 731,
+    "any_finding_overlaps": 1.2
+   },
+   "company_name": {
+    "gold": 563,
+    "any_finding_overlaps": 0.0
+   },
+   "occupation": {
+    "gold": 403,
+    "any_finding_overlaps": 1.2
+   },
+   "url": {
+    "gold": 353,
+    "any_finding_overlaps": 0.0
+   },
+   "country": {
+    "gold": 287,
+    "any_finding_overlaps": 0.0
+   },
+   "time": {
+    "gold": 283,
+    "any_finding_overlaps": 0.0
+   },
+   "customer_id": {
+    "gold": 187,
+    "any_finding_overlaps": 3.7
+   },
+   "city": {
+    "gold": 187,
+    "any_finding_overlaps": 1.1
+   },
+   "state": {
+    "gold": 186,
+    "any_finding_overlaps": 2.7
+   },
+   "user_name": {
+    "gold": 137,
+    "any_finding_overlaps": 0.0
+   },
+   "date_time": {
+    "gold": 122,
+    "any_finding_overlaps": 0.0
+   },
+   "biometric_identifier": {
+    "gold": 109,
+    "any_finding_overlaps": 0.0
+   },
+   "county": {
+    "gold": 100,
+    "any_finding_overlaps": 0.0
+   },
+   "education_level": {
+    "gold": 99,
+    "any_finding_overlaps": 0.0
+   },
+   "race_ethnicity": {
+    "gold": 93,
+    "any_finding_overlaps": 0.0
+   },
+   "language": {
+    "gold": 89,
+    "any_finding_overlaps": 0.0
+   },
+   "employment_status": {
+    "gold": 88,
+    "any_finding_overlaps": 0.0
+   },
+   "employee_id": {
+    "gold": 82,
+    "any_finding_overlaps": 1.2
+   },
+   "age": {
+    "gold": 82,
+    "any_finding_overlaps": 0.0
+   },
+   "religious_belief": {
+    "gold": 72,
+    "any_finding_overlaps": 0.0
+   },
+   "political_view": {
+    "gold": 57,
+    "any_finding_overlaps": 0.0
+   },
+   "http_cookie": {
+    "gold": 44,
+    "any_finding_overlaps": 27.3
+   },
+   "unique_id": {
+    "gold": 21,
+    "any_finding_overlaps": 4.8
+   },
+   "sexuality": {
+    "gold": 21,
+    "any_finding_overlaps": 0.0
+   },
+   "device_identifier": {
+    "gold": 17,
+    "any_finding_overlaps": 5.9
+   }
+  },
+  "negative_documents": 0,
+  "negative_documents_with_findings": 0,
+  "negative_fpr": null,
+  "negative_fpr_ci": null,
+  "negative_by_kind": {},
+  "sample": 1000
+ },
+ {
+  "dataset": "gretel-finance",
+  "repo": "gretelai/synthetic_pii_finance_multilingual",
+  "revision": "7b844d16738527a04264f50214cb426a4cea0897",
+  "licence": "Apache-2.0",
+  "documents": 1000,
+  "floor": "medium",
+  "ner": false,
+  "categories": {
+   "account_pin": {
+    "gold": 36,
+    "tp": 16,
+    "fp": 1,
+    "fn": 20,
+    "precision": 94.1,
+    "precision_ci": [
+     73.0,
+     99.0
+    ],
+    "recall": 44.4,
+    "recall_ci": [
+     29.5,
+     60.4
+    ],
+    "gold_valid": 36,
+    "recall_valid": 44.4,
+    "recall_valid_ci": [
+     29.5,
+     60.4
+    ],
+    "fp_on_other_label": {
+     "(no label)": 1
+    }
+   },
+   "address": {
+    "gold": 703,
+    "tp": 183,
+    "fp": 61,
+    "fn": 520,
+    "precision": 75.0,
+    "precision_ci": [
+     69.2,
+     80.0
+    ],
+    "recall": 26.0,
+    "recall_ci": [
+     22.9,
+     29.4
+    ],
+    "gold_valid": 703,
+    "recall_valid": 26.0,
+    "recall_valid_ci": [
+     22.9,
+     29.4
+    ],
+    "fp_on_other_label": {
+     "(no label)": 59,
+     "name": 1,
+     "local_latlng": 1
+    }
+   },
+   "bank_account": {
+    "gold": 23,
+    "tp": 13,
+    "fp": 44,
+    "fn": 10,
+    "precision": 22.8,
+    "precision_ci": [
+     13.8,
+     35.2
+    ],
+    "recall": 56.5,
+    "recall_ci": [
+     36.8,
+     74.4
+    ],
+    "gold_valid": 23,
+    "recall_valid": 56.5,
+    "recall_valid_ci": [
+     36.8,
+     74.4
+    ],
+    "fp_on_other_label": {
+     "(no label)": 40,
+     "name": 2,
+     "account_pin": 2
+    }
+   },
+   "bank_routing": {
+    "gold": 26,
+    "tp": 0,
+    "fp": 0,
+    "fn": 26,
+    "precision": null,
+    "precision_ci": null,
+    "recall": 0.0,
+    "recall_ci": [
+     0.0,
+     12.9
+    ],
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {}
+   },
+   "card": {
+    "gold": 18,
+    "tp": 9,
+    "fp": 1,
+    "fn": 9,
+    "precision": 90.0,
+    "precision_ci": [
+     59.6,
+     98.2
+    ],
+    "recall": 50.0,
+    "recall_ci": [
+     29.0,
+     71.0
+    ],
+    "gold_valid": 9,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     70.1,
+     100.0
+    ],
+    "fp_on_other_label": {
+     "(no label)": 1
+    }
+   },
+   "coordinates": {
+    "gold": 18,
+    "tp": 14,
+    "fp": 11,
+    "fn": 4,
+    "precision": 56.0,
+    "precision_ci": [
+     37.1,
+     73.3
+    ],
+    "recall": 77.8,
+    "recall_ci": [
+     54.8,
+     91.0
+    ],
+    "gold_valid": 18,
+    "recall_valid": 77.8,
+    "recall_valid_ci": [
+     54.8,
+     91.0
+    ],
+    "fp_on_other_label": {
+     "(no label)": 11
+    }
+   },
+   "crypto_wallet": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 6,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     39.0
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 6
+    }
+   },
+   "cvv": {
+    "gold": 32,
+    "tp": 12,
+    "fp": 2,
+    "fn": 20,
+    "precision": 85.7,
+    "precision_ci": [
+     60.1,
+     96.0
+    ],
+    "recall": 37.5,
+    "recall_ci": [
+     22.9,
+     54.7
+    ],
+    "gold_valid": 32,
+    "recall_valid": 37.5,
+    "recall_valid_ci": [
+     22.9,
+     54.7
+    ],
+    "fp_on_other_label": {
+     "(no label)": 2
+    }
+   },
+   "date_of_birth": {
+    "gold": 43,
+    "tp": 28,
+    "fp": 6,
+    "fn": 15,
+    "precision": 82.4,
+    "precision_ci": [
+     66.5,
+     91.7
+    ],
+    "recall": 65.1,
+    "recall_ci": [
+     50.2,
+     77.6
+    ],
+    "gold_valid": 43,
+    "recall_valid": 65.1,
+    "recall_valid_ci": [
+     50.2,
+     77.6
+    ],
+    "fp_on_other_label": {
+     "(no label)": 4,
+     "date": 2
+    }
+   },
+   "driving_licence": {
+    "gold": 25,
+    "tp": 9,
+    "fp": 1,
+    "fn": 16,
+    "precision": 90.0,
+    "precision_ci": [
+     59.6,
+     98.2
+    ],
+    "recall": 36.0,
+    "recall_ci": [
+     20.2,
+     55.5
+    ],
+    "gold_valid": 25,
+    "recall_valid": 36.0,
+    "recall_valid_ci": [
+     20.2,
+     55.5
+    ],
+    "fp_on_other_label": {
+     "(no label)": 1
+    }
+   },
+   "email": {
+    "gold": 268,
+    "tp": 256,
+    "fp": 14,
+    "fn": 12,
+    "precision": 94.8,
+    "precision_ci": [
+     91.5,
+     96.9
+    ],
+    "recall": 95.5,
+    "recall_ci": [
+     92.3,
+     97.4
+    ],
+    "gold_valid": 261,
+    "recall_valid": 98.1,
+    "recall_valid_ci": [
+     95.6,
+     99.2
+    ],
+    "fp_on_other_label": {
+     "name": 14
+    }
+   },
+   "health": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 2,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     65.8
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 2
+    }
+   },
+   "health_id": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 3,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     56.2
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 3
+    }
+   },
+   "iban": {
+    "gold": 35,
+    "tp": 28,
+    "fp": 1,
+    "fn": 7,
+    "precision": 96.6,
+    "precision_ci": [
+     82.8,
+     99.4
+    ],
+    "recall": 80.0,
+    "recall_ci": [
+     64.1,
+     90.0
+    ],
+    "gold_valid": 29,
+    "recall_valid": 89.7,
+    "recall_valid_ci": [
+     73.6,
+     96.4
+    ],
+    "fp_on_other_label": {
+     "(no label)": 1
+    }
+   },
+   "ip_address": {
+    "gold": 80,
+    "tp": 18,
+    "fp": 0,
+    "fn": 62,
+    "precision": 100.0,
+    "precision_ci": [
+     82.4,
+     100.0
+    ],
+    "recall": 22.5,
+    "recall_ci": [
+     14.7,
+     32.8
+    ],
+    "gold_valid": 49,
+    "recall_valid": 36.7,
+    "recall_valid_ci": [
+     24.7,
+     50.7
+    ],
+    "fp_on_other_label": {}
+   },
+   "passport": {
+    "gold": 20,
+    "tp": 13,
+    "fp": 1,
+    "fn": 7,
+    "precision": 92.9,
+    "precision_ci": [
+     68.5,
+     98.7
+    ],
+    "recall": 65.0,
+    "recall_ci": [
+     43.3,
+     81.9
+    ],
+    "gold_valid": 20,
+    "recall_valid": 65.0,
+    "recall_valid_ci": [
+     43.3,
+     81.9
+    ],
+    "fp_on_other_label": {
+     "(no label)": 1
+    }
+   },
+   "person_name": {
+    "gold": 1831,
+    "tp": 136,
+    "fp": 12,
+    "fn": 1695,
+    "precision": 91.9,
+    "precision_ci": [
+     86.4,
+     95.3
+    ],
+    "recall": 7.4,
+    "recall_ci": [
+     6.3,
+     8.7
+    ],
+    "gold_valid": 1831,
+    "recall_valid": 7.4,
+    "recall_valid_ci": [
+     6.3,
+     8.7
+    ],
+    "fp_on_other_label": {
+     "(no label)": 10,
+     "company": 2
+    }
+   },
+   "phone": {
+    "gold": 178,
+    "tp": 67,
+    "fp": 17,
+    "fn": 111,
+    "precision": 79.8,
+    "precision_ci": [
+     70.0,
+     87.0
+    ],
+    "recall": 37.6,
+    "recall_ci": [
+     30.9,
+     44.9
+    ],
+    "gold_valid": 72,
+    "recall_valid": 91.7,
+    "recall_valid_ci": [
+     83.0,
+     96.1
+    ],
+    "fp_on_other_label": {
+     "(no label)": 13,
+     "driver_license_number": 4
+    }
+   },
+   "postal_code": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 32,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     10.7
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 32
+    }
+   },
+   "secret": {
+    "gold": 35,
+    "tp": 14,
+    "fp": 2,
+    "fn": 21,
+    "precision": 87.5,
+    "precision_ci": [
+     64.0,
+     96.5
+    ],
+    "recall": 40.0,
+    "recall_ci": [
+     25.6,
+     56.4
+    ],
+    "gold_valid": 35,
+    "recall_valid": 40.0,
+    "recall_valid_ci": [
+     25.6,
+     56.4
+    ],
+    "fp_on_other_label": {
+     "(no label)": 2
+    }
+   },
+   "ssn": {
+    "gold": 32,
+    "tp": 14,
+    "fp": 0,
+    "fn": 18,
+    "precision": 100.0,
+    "precision_ci": [
+     78.5,
+     100.0
+    ],
+    "recall": 43.8,
+    "recall_ci": [
+     28.2,
+     60.7
+    ],
+    "gold_valid": 14,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     78.5,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "swift_bic": {
+    "gold": 29,
+    "tp": 14,
+    "fp": 6,
+    "fn": 15,
+    "precision": 70.0,
+    "precision_ci": [
+     48.1,
+     85.5
+    ],
+    "recall": 48.3,
+    "recall_ci": [
+     31.4,
+     65.6
+    ],
+    "gold_valid": 29,
+    "recall_valid": 48.3,
+    "recall_valid_ci": [
+     31.4,
+     65.6
+    ],
+    "fp_on_other_label": {
+     "(no label)": 6
+    }
+   },
+   "tax_id": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 3,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     56.2
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 3
+    }
+   },
+   "vin": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 4,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     49.0
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 4
+    }
+   }
+  },
+  "unmapped_labels": {
+   "date": {
+    "gold": 1413,
+    "any_finding_overlaps": 0.1
+   },
+   "company": {
+    "gold": 1090,
+    "any_finding_overlaps": 0.2
+   },
+   "time": {
+    "gold": 262,
+    "any_finding_overlaps": 0.0
+   },
+   "employee_id": {
+    "gold": 50,
+    "any_finding_overlaps": 0.0
+   },
+   "customer_id": {
+    "gold": 42,
+    "any_finding_overlaps": 0.0
+   },
+   "date_time": {
+    "gold": 15,
+    "any_finding_overlaps": 0.0
+   },
+   "user_name": {
+    "gold": 12,
+    "any_finding_overlaps": 0.0
+   }
+  },
+  "negative_documents": 0,
+  "negative_documents_with_findings": 0,
+  "negative_fpr": null,
+  "negative_fpr_ci": null,
+  "negative_by_kind": {},
+  "sample": 1000
+ },
+ {
+  "dataset": "ylemis",
+  "repo": "Pranshurs/ylemis-india-pii-benchmark",
+  "revision": "dafb239bab71cd336549de70d3328afc5a1cb652",
+  "licence": "CC0-1.0",
+  "documents": 1000,
+  "floor": "medium",
+  "ner": false,
+  "categories": {
+   "aadhaar": {
+    "gold": 177,
+    "tp": 177,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     97.9,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     97.9,
+     100.0
+    ],
+    "gold_valid": 177,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     97.9,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "address": {
+    "gold": 378,
+    "tp": 165,
+    "fp": 0,
+    "fn": 213,
+    "precision": 100.0,
+    "precision_ci": [
+     97.7,
+     100.0
+    ],
+    "recall": 43.7,
+    "recall_ci": [
+     38.7,
+     48.7
+    ],
+    "gold_valid": 378,
+    "recall_valid": 43.7,
+    "recall_valid_ci": [
+     38.7,
+     48.7
+    ],
+    "fp_on_other_label": {}
+   },
+   "email": {
+    "gold": 101,
+    "tp": 101,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     96.3,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     96.3,
+     100.0
+    ],
+    "gold_valid": 101,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     96.3,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "gstin": {
+    "gold": 34,
+    "tp": 34,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     89.8,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     89.8,
+     100.0
+    ],
+    "gold_valid": 34,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     89.8,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "health_id": {
+    "gold": 53,
+    "tp": 20,
+    "fp": 0,
+    "fn": 33,
+    "precision": 100.0,
+    "precision_ci": [
+     83.9,
+     100.0
+    ],
+    "recall": 37.7,
+    "recall_ci": [
+     25.9,
+     51.2
+    ],
+    "gold_valid": 53,
+    "recall_valid": 37.7,
+    "recall_valid_ci": [
+     25.9,
+     51.2
+    ],
+    "fp_on_other_label": {}
+   },
+   "ifsc": {
+    "gold": 103,
+    "tp": 103,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     96.4,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     96.4,
+     100.0
+    ],
+    "gold_valid": 103,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     96.4,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "pan": {
+    "gold": 268,
+    "tp": 268,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     98.6,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     98.6,
+     100.0
+    ],
+    "gold_valid": 268,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     98.6,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "passport": {
+    "gold": 36,
+    "tp": 36,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     90.4,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     90.4,
+     100.0
+    ],
+    "gold_valid": 36,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     90.4,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "person_name": {
+    "gold": 833,
+    "tp": 0,
+    "fp": 0,
+    "fn": 833,
+    "precision": null,
+    "precision_ci": null,
+    "recall": 0.0,
+    "recall_ci": [
+     0.0,
+     0.5
+    ],
+    "gold_valid": 833,
+    "recall_valid": 0.0,
+    "recall_valid_ci": [
+     0.0,
+     0.5
+    ],
+    "fp_on_other_label": {}
+   },
+   "phone": {
+    "gold": 363,
+    "tp": 363,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     99.0,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     99.0,
+     100.0
+    ],
+    "gold_valid": 363,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     99.0,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "upi_id": {
+    "gold": 116,
+    "tp": 116,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     96.8,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     96.8,
+     100.0
+    ],
+    "gold_valid": 116,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     96.8,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "vehicle_reg": {
+    "gold": 54,
+    "tp": 54,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     93.4,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     93.4,
+     100.0
+    ],
+    "gold_valid": 54,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     93.4,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "voter_id": {
+    "gold": 56,
+    "tp": 26,
+    "fp": 0,
+    "fn": 30,
+    "precision": 100.0,
+    "precision_ci": [
+     87.1,
+     100.0
+    ],
+    "recall": 46.4,
+    "recall_ci": [
+     34.0,
+     59.3
+    ],
+    "gold_valid": 56,
+    "recall_valid": 46.4,
+    "recall_valid_ci": [
+     34.0,
+     59.3
+    ],
+    "fp_on_other_label": {}
+   }
+  },
+  "unmapped_labels": {
+   "account_id": {
+    "gold": 265,
+    "any_finding_overlaps": 0.0
+   },
+   "location": {
+    "gold": 253,
+    "any_finding_overlaps": 0.0
+   },
+   "organization": {
+    "gold": 154,
+    "any_finding_overlaps": 0.0
+   }
+  },
+  "negative_documents": 167,
+  "negative_documents_with_findings": 0,
+  "negative_fpr": 0.0,
+  "negative_fpr_ci": [
+   0.0,
+   2.2
+  ],
+  "negative_by_kind": {
+   "benign": {
+    "documents": 80,
+    "with_findings": 0,
+    "fpr": 0.0
+   },
+   "hard_negative": {
+    "documents": 87,
+    "with_findings": 0,
+    "fpr": 0.0
+   }
+  },
+  "sample": 1000
+ },
+ {
+  "dataset": "maskara",
+  "repo": "somukandula/maskara-indian-pii-200k",
+  "revision": "0146bc560e657a52a17113b9fb227498b751901a",
+  "licence": "MIT",
+  "documents": 1000,
+  "floor": "medium",
+  "ner": false,
+  "categories": {
+   "aadhaar": {
+    "gold": 262,
+    "tp": 26,
+    "fp": 0,
+    "fn": 236,
+    "precision": 100.0,
+    "precision_ci": [
+     87.1,
+     100.0
+    ],
+    "recall": 9.9,
+    "recall_ci": [
+     6.9,
+     14.1
+    ],
+    "gold_valid": 30,
+    "recall_valid": 86.7,
+    "recall_valid_ci": [
+     70.3,
+     94.7
+    ],
+    "fp_on_other_label": {}
+   },
+   "address": {
+    "gold": 183,
+    "tp": 121,
+    "fp": 15,
+    "fn": 62,
+    "precision": 89.0,
+    "precision_ci": [
+     82.6,
+     93.2
+    ],
+    "recall": 66.1,
+    "recall_ci": [
+     59.0,
+     72.6
+    ],
+    "gold_valid": 183,
+    "recall_valid": 66.1,
+    "recall_valid_ci": [
+     59.0,
+     72.6
+    ],
+    "fp_on_other_label": {
+     "(no label)": 15
+    }
+   },
+   "card": {
+    "gold": 38,
+    "tp": 0,
+    "fp": 0,
+    "fn": 38,
+    "precision": null,
+    "precision_ci": null,
+    "recall": 0.0,
+    "recall_ci": [
+     0.0,
+     9.2
+    ],
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {}
+   },
+   "date_of_birth": {
+    "gold": 155,
+    "tp": 139,
+    "fp": 0,
+    "fn": 16,
+    "precision": 100.0,
+    "precision_ci": [
+     97.3,
+     100.0
+    ],
+    "recall": 89.7,
+    "recall_ci": [
+     83.9,
+     93.5
+    ],
+    "gold_valid": 155,
+    "recall_valid": 89.7,
+    "recall_valid_ci": [
+     83.9,
+     93.5
+    ],
+    "fp_on_other_label": {}
+   },
+   "driving_licence": {
+    "gold": 103,
+    "tp": 99,
+    "fp": 0,
+    "fn": 4,
+    "precision": 100.0,
+    "precision_ci": [
+     96.3,
+     100.0
+    ],
+    "recall": 96.1,
+    "recall_ci": [
+     90.4,
+     98.5
+    ],
+    "gold_valid": 103,
+    "recall_valid": 96.1,
+    "recall_valid_ci": [
+     90.4,
+     98.5
+    ],
+    "fp_on_other_label": {}
+   },
+   "email": {
+    "gold": 208,
+    "tp": 206,
+    "fp": 2,
+    "fn": 2,
+    "precision": 99.0,
+    "precision_ci": [
+     96.6,
+     99.7
+    ],
+    "recall": 99.0,
+    "recall_ci": [
+     96.6,
+     99.7
+    ],
+    "gold_valid": 206,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     98.2,
+     100.0
+    ],
+    "fp_on_other_label": {
+     "(no label)": 2
+    }
+   },
+   "health": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 74,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     4.9
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 74
+    }
+   },
+   "ip_address": {
+    "gold": 67,
+    "tp": 50,
+    "fp": 0,
+    "fn": 17,
+    "precision": 100.0,
+    "precision_ci": [
+     92.9,
+     100.0
+    ],
+    "recall": 74.6,
+    "recall_ci": [
+     63.1,
+     83.5
+    ],
+    "gold_valid": 67,
+    "recall_valid": 74.6,
+    "recall_valid_ci": [
+     63.1,
+     83.5
+    ],
+    "fp_on_other_label": {}
+   },
+   "pan": {
+    "gold": 70,
+    "tp": 26,
+    "fp": 0,
+    "fn": 44,
+    "precision": 100.0,
+    "precision_ci": [
+     87.1,
+     100.0
+    ],
+    "recall": 37.1,
+    "recall_ci": [
+     26.8,
+     48.9
+    ],
+    "gold_valid": 30,
+    "recall_valid": 86.7,
+    "recall_valid_ci": [
+     70.3,
+     94.7
+    ],
+    "fp_on_other_label": {}
+   },
+   "passport": {
+    "gold": 50,
+    "tp": 45,
+    "fp": 0,
+    "fn": 5,
+    "precision": 100.0,
+    "precision_ci": [
+     92.1,
+     100.0
+    ],
+    "recall": 90.0,
+    "recall_ci": [
+     78.6,
+     95.7
+    ],
+    "gold_valid": 50,
+    "recall_valid": 90.0,
+    "recall_valid_ci": [
+     78.6,
+     95.7
+    ],
+    "fp_on_other_label": {}
+   },
+   "person_name": {
+    "gold": 619,
+    "tp": 132,
+    "fp": 0,
+    "fn": 487,
+    "precision": 100.0,
+    "precision_ci": [
+     97.2,
+     100.0
+    ],
+    "recall": 21.3,
+    "recall_ci": [
+     18.3,
+     24.7
+    ],
+    "gold_valid": 619,
+    "recall_valid": 21.3,
+    "recall_valid_ci": [
+     18.3,
+     24.7
+    ],
+    "fp_on_other_label": {}
+   },
+   "phone": {
+    "gold": 467,
+    "tp": 270,
+    "fp": 1,
+    "fn": 197,
+    "precision": 99.6,
+    "precision_ci": [
+     97.9,
+     99.9
+    ],
+    "recall": 57.8,
+    "recall_ci": [
+     53.3,
+     62.2
+    ],
+    "gold_valid": 199,
+    "recall_valid": 97.0,
+    "recall_valid_ci": [
+     93.6,
+     98.6
+    ],
+    "fp_on_other_label": {
+     "(no label)": 1
+    }
+   },
+   "postal_code": {
+    "gold": 0,
+    "tp": 0,
+    "fp": 1,
+    "fn": 0,
+    "precision": 0.0,
+    "precision_ci": [
+     0.0,
+     79.3
+    ],
+    "recall": null,
+    "recall_ci": null,
+    "gold_valid": 0,
+    "recall_valid": null,
+    "recall_valid_ci": null,
+    "fp_on_other_label": {
+     "(no label)": 1
+    }
+   },
+   "secret": {
+    "gold": 116,
+    "tp": 97,
+    "fp": 0,
+    "fn": 19,
+    "precision": 100.0,
+    "precision_ci": [
+     96.2,
+     100.0
+    ],
+    "recall": 83.6,
+    "recall_ci": [
+     75.8,
+     89.3
+    ],
+    "gold_valid": 116,
+    "recall_valid": 83.6,
+    "recall_valid_ci": [
+     75.8,
+     89.3
+    ],
+    "fp_on_other_label": {}
+   },
+   "ssn": {
+    "gold": 22,
+    "tp": 18,
+    "fp": 0,
+    "fn": 4,
+    "precision": 100.0,
+    "precision_ci": [
+     82.4,
+     100.0
+    ],
+    "recall": 81.8,
+    "recall_ci": [
+     61.5,
+     92.7
+    ],
+    "gold_valid": 18,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     82.4,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "upi_id": {
+    "gold": 71,
+    "tp": 66,
+    "fp": 0,
+    "fn": 5,
+    "precision": 100.0,
+    "precision_ci": [
+     94.5,
+     100.0
+    ],
+    "recall": 93.0,
+    "recall_ci": [
+     84.6,
+     97.0
+    ],
+    "gold_valid": 71,
+    "recall_valid": 93.0,
+    "recall_valid_ci": [
+     84.6,
+     97.0
+    ],
+    "fp_on_other_label": {}
+   },
+   "vehicle_reg": {
+    "gold": 99,
+    "tp": 99,
+    "fp": 0,
+    "fn": 0,
+    "precision": 100.0,
+    "precision_ci": [
+     96.3,
+     100.0
+    ],
+    "recall": 100.0,
+    "recall_ci": [
+     96.3,
+     100.0
+    ],
+    "gold_valid": 99,
+    "recall_valid": 100.0,
+    "recall_valid_ci": [
+     96.3,
+     100.0
+    ],
+    "fp_on_other_label": {}
+   }
+  },
+  "unmapped_labels": {
+   "USERNAME": {
+    "gold": 67,
+    "any_finding_overlaps": 0.0
+   }
+  },
+  "negative_documents": 8,
+  "negative_documents_with_findings": 0,
+  "negative_fpr": 0.0,
+  "negative_fpr_ci": [
+   0.0,
+   32.4
+  ],
+  "negative_by_kind": {
+   "real_world_curated": {
+    "documents": 8,
+    "with_findings": 0,
+    "fpr": 0.0
+   }
+  },
+  "sample": 1000
+ }
+]

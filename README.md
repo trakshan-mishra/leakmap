@@ -37,33 +37,64 @@ In CI, one step does both:
 
 ## What it finds
 
+A value is reported on its own only when a checksum, registry or distinctive shape backs it. Values without one (a bank account, a CVV, a passport number) are reported only next to a label that says what they are: `passport no.`, `CVV:`, `"routing_number": ...`.
+
 | Data | How |
 |---|---|
 | Aadhaar | 12 digits + Verhoeff checksum |
-| PAN, GSTIN | Structure; GSTIN check character |
-| UPI ID | `name@handle` for 50+ bank/app handles |
-| Indian mobile | +91 / 0 / bare 10-digit 6–9 numbers |
-| Email, payment card, public IP, IFSC | Patterns; Luhn for cards |
-| Name, date of birth, address, PIN code, gender, health fields | Field names |
-| API keys and secrets | OpenAI/Anthropic, AWS, GitHub, Slack, Google, Stripe/Razorpay live keys, private keys, JWTs, password fields |
+| PAN, GSTIN | Structure; GSTIN check character; lower-case or spaced PAN next to "PAN" |
+| UPI ID | `name@handle` for 90+ bank/app handles; any handle next to "UPI" / "VPA" |
+| Phone | Indian mobiles; other numbers written with `+` or separators and valid under the numbering plan ([phonenumbers](https://github.com/daviddrysdale/python-phonenumbers)) |
+| Payment card, IBAN, US routing number, US SSN | Luhn + issuer ranges; IBAN mod-97 and country length; ABA checksum; SSA rules |
+| Email, IFSC, SWIFT/BIC, MAC, public IPv4 / IPv6 | Patterns; BIC country code; global addresses only |
+| Vehicle | Indian registration (state code), BH series; North American VIN check digit |
+| Driving licence, passport, voter ID (EPIC), tax ID (EIN, ITIN, TAN), health record / ABHA, bank account, CVV, PIN | Shape plus a label next to it (Indian DL format and ABHA on their own) |
+| Crypto wallet | Bitcoin base58check and bech32 checksums; Ethereum `0x` addresses next to a label |
+| Date of birth, coordinates, postal code | Dates or numbers next to "DOB" / "lat" / "PIN code"; coordinates with N/S E/W |
+| Name, address, gender, health | Field names, also inside text (`First Name: …`, markdown tables); street-address shape; optional model (below) |
+| API keys and secrets | 30+ fixed-prefix formats (OpenAI, Anthropic, AWS, GitHub, GitLab, Slack, Google, Stripe, Razorpay, Hugging Face, Groq, SendGrid, Twilio, npm, PyPI, Shopify, Databricks, Telegram, Azure, Slack/Discord webhooks, ...), private keys, JWTs, database URLs with a password, `Bearer` tokens, values after `password:` / `api_key=` / `token is` |
 
-It looks inside JSON, JSON encoded inside JSON (common in tracing SDKs), NDJSON / Sentry envelopes, form bodies, multipart, query strings, URL paths and **OpenTelemetry protobuf** (Langfuse, Logfire, Arize, Traceloop). Detectors live in [`leakmap/data/detectors.yaml`](leakmap/data/detectors.yaml); vendors in [`leakmap/data/vendors.yaml`](leakmap/data/vendors.yaml) (127 companies).
+**Names and addresses in free text** need a language model. `uv tool install 'leakmap[ner]'` and `leakmap run --ner` add [GLiNER's PII model](https://huggingface.co/urchade/gliner_multi_pii-v1) (Apache-2.0, runs on CPU, pinned to a commit). It adds torch to the install and 0.1–0.5 s per long text value, so it is off by default.
+
+Base64 values are decoded and scanned (Mixpanel sends events as `data=<base64 JSON>`). It looks inside JSON, JSON encoded inside JSON (common in tracing SDKs), NDJSON / Sentry envelopes, form bodies, multipart, query strings, URL paths and **OpenTelemetry protobuf** (Langfuse, Logfire, Arize, Traceloop). Detectors live in [`leakmap/data/detectors.yaml`](leakmap/data/detectors.yaml); vendors in [`leakmap/data/vendors.yaml`](leakmap/data/vendors.yaml) (127 companies).
 
 Precision comes first: a check that raises false alarms gets removed from CI. The test suite includes everyday payloads (UUIDs, trace IDs, timestamps, order IDs, tool schemas) that must produce no findings.
 
 ## Accuracy
 
-On [Gretel's public PII test set](https://huggingface.co/datasets/gretelai/gretel-pii-masking-en-v1) (5,000 documents, not written by me, detectors not tuned on it), for email, card and IPv4:
+Scored on four public PII datasets I did not write: [Nemotron-PII](https://huggingface.co/datasets/nvidia/Nemotron-PII), [Gretel finance](https://huggingface.co/datasets/gretelai/synthetic_pii_finance_multilingual), [Ylemis](https://huggingface.co/datasets/Pranshurs/ylemis-india-pii-benchmark) and [Maskara](https://huggingface.co/datasets/somukandula/maskara-indian-pii-200k), 133,194 test documents in all. The rules were frozen before any test set was scored, and the numbers below come from that one run, at the default floor. "Valid" means gold values that pass the category's checksum. Generators also write numbers no real system issues, and leakmap drops those on purpose.
 
-| | Precision | Recall |
-|---|---|---|
-| leakmap (all confidence levels) | 98.7% | 98.2% |
-| leakmap (default `medium` floor) | 99.0% | 78.2% |
-| Presidio 2.2 + spaCy lg | 95.7% | 96.5% |
+| Data | Dataset | Precision | Recall |
+|---|---|---|---|
+| Email | Nemotron | 99.8% | 99.2% |
+| Aadhaar, PAN, GSTIN, IFSC, UPI, Indian mobile, passport, vehicle | Ylemis | 100% | 100% |
+| Aadhaar | Maskara | 100% | 86.1% of valid (7.5% of all) |
+| Phone | Nemotron | 95.5% | 99.9% of valid (81.3% of all) |
+| Card | Nemotron | 99.1% | 99.8% of valid (11.8% of all) |
+| IBAN | Gretel finance | 97.5% | 95.6% of valid |
+| US SSN | Nemotron | 88.1% | 99.0% |
+| Date of birth | Nemotron | 98.8% | 98.8% |
+| MAC address | Nemotron | 99.8% | 99.9% |
+| Driving licence / passport | Maskara | 100% | 96.3% / 96.0% |
+| Bank account | Nemotron | 97.1% | 81.2% |
+| API keys and passwords | Nemotron / Maskara | 83.5% / 98.5% | 77.1% / 84.9% |
+| Address | Nemotron | 98.7% | 68.7% |
+| Name (rules only) | Nemotron | 98.0% | 29.5% |
 
-The default floor hides bare IPs with no context, which is where the recall difference comes from. On a synthetic set of Indian API traffic (Aadhaar, PAN, UPI, mobile and the rest), the held-out split scores 100% precision and 99.3% recall, against 90.9% / 87.6% for Presidio on the shared categories. I wrote that set, so treat it as a regression suite. Method, per-category tables and every error type are in [`benchmark/`](benchmark/README.md).
+None of the 1,956 negative documents in Ylemis and Maskara produced a finding.
 
-On real traffic recorded in public test suites (pydantic-ai, crewAI, langchain, llm-anthropic: 5,109 requests to OpenAI, Anthropic, Gemini, Bedrock and others), every match was checked by hand. Before the fix, 9 of 14 default-floor matches were correct; two rules caused the rest and were fixed, which brings it to 9 of 9. That second number is tuned on the same data. Details: [`benchmark/real-traffic.md`](benchmark/real-traffic.md). Run live on real codebases (crewAI, LiteLLM, chromadb, gradio, llm-anthropic's test suite) and checked against a raw capture, it caught 27 of 27 planted values that left the machine, with no false alarms; it missed a name written in free text. See [`benchmark/real-codebases.md`](benchmark/real-codebases.md).
+Weak spots:
+
+- **Names.** Without `--ner`, a name is found only after a label or in a name field.
+- **Addresses** are only partly found.
+- **Bare IPs.** At the default floor, a bare IP is hidden as low confidence.
+- **Hindi and Bengali labels.** Voter IDs labelled in those scripts are missed.
+
+Several of the "false alarms" are real data that the dataset left unlabelled, such as session cookies, diagnoses and ZIP codes. Rule bugs that the held-out run turned up were fixed afterwards, and those numbers are reported separately as tuned on test.
+
+Full per-category tables with 95% intervals, every dataset, the label-quality checks and the error breakdown are in [`benchmark/independent.md`](benchmark/independent.md).
+
+Older checks: the synthetic Indian API traffic set ([`benchmark/`](benchmark/README.md)) is one I wrote, so treat it as a regression suite. [Real traffic](benchmark/real-traffic.md) recorded in the pydantic-ai, crewAI, langchain and llm-anthropic test suites (5,109 requests) was checked by hand. In [live runs on real codebases](benchmark/real-codebases.md) with planted values, all 27 that left the machine were caught. That is a small sample.
 
 ## Tested against real SDKs
 

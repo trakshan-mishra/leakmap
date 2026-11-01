@@ -8,3 +8,9 @@ leakmap-demo.html
 benchmark/data/gretel/
 .coverage
 requirements.lock.txt
+benchmark/data/nemotron/
+benchmark/data/gretel-finance/
+benchmark/data/ylemis/
+benchmark/data/maskara/
+benchmark/data/nemotron-train/
+benchmark/data/maskara-train/

@@ -9,6 +9,7 @@ import time
 
 from mitmproxy import ctx, http
 
+from leakmap import detect
 from leakmap.detect import inspect_request
 from leakmap.model import Event
 
@@ -20,8 +21,11 @@ class Leakmap:
     def load(self, loader):
         loader.add_option("leakmap_out", str, "", "File to append events to (JSON lines).")
         loader.add_option("leakmap_stub", bool, False, "Answer every request locally instead of forwarding it.")
+        loader.add_option("leakmap_ner", bool, False, "Also look for names and addresses with the optional model.")
 
     def configure(self, updated):
+        if "leakmap_ner" in updated and ctx.options.leakmap_ner:
+            detect.enable_ner()
         if "leakmap_out" in updated and ctx.options.leakmap_out:
             self._out = open(ctx.options.leakmap_out, "a", buffering=1)
 

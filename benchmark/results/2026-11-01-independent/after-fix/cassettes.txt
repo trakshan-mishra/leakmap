@@ -1,0 +1,4 @@
+2930 cassettes, 5109 outgoing requests
+vendor known for 4767, unknown for 342
+bodies: {'json': 3264, 'empty': 1746, 'protobuf': 65, 'text': 26, 'form': 7, 'binary': 1}
+matches: {'address (high)': 2, 'address (medium)': 6, 'coordinates (high)': 8, 'coordinates (medium)': 2, 'ip_address (low)': 4, 'person_name (high)': 1, 'secret (high)': 9, 'secret (medium)': 1}

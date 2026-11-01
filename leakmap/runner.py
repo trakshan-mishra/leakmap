@@ -68,6 +68,7 @@ def run(
     command: list[str],
     out_dir: Path,
     stub: bool = False,
+    ner: bool = False,
     min_confidence: str = "medium",
     ignore_hosts: tuple[str, ...] = (),
 ) -> tuple[int, dict]:
@@ -87,6 +88,7 @@ def run(
         "--scripts", str(ADDON),
         "--set", f"leakmap_out={events_path}",
         "--set", f"leakmap_stub={'true' if stub else 'false'}",
+        "--set", f"leakmap_ner={'true' if ner else 'false'}",
     ]
     if stub:
         args += ["--set", "connection_strategy=lazy"]

@@ -4,6 +4,8 @@ This module knows nothing about mitmproxy so it can be tested directly and
 reused by other capture paths (OTLP receiver, client hooks).
 """
 
+import base64
+import binascii
 import json
 import re
 import time
@@ -36,11 +38,19 @@ class Detector:
         self.negative_key = opt("negative_key")  # field name that rules it out
         self.negative_context = opt("negative_context")  # words just before that rule it out
         self.exclude = opt("exclude")  # matched text that is usually something else
+        self.requires_context = bool(spec.get("requires_context"))
 
     def judge(self, matched: str, before: str, key: str) -> str | None:
         """Confidence for this match, or None to drop it. Confirming context wins over negative."""
+        if self.requires_context:
+            # The label is the only evidence here, so anything against it wins.
+            if (self.exclude and self.exclude.search(matched)) or (
+                    self.negative_context and self.negative_context.search(before)):
+                return None
         if (self.hint and self.hint.search(key)) or (self.context and self.context.search(before)):
             return "high"
+        if self.requires_context:
+            return None
         if self.negative_key and self.negative_key.search(key):
             return None
         if self.negative_context and self.negative_context.search(before):
@@ -53,6 +63,13 @@ class Detector:
 CONTEXT_WINDOW = 40
 
 
+# Empty form fields: "None", "N/A", "[Checkboxes]", "____".
+PLACEHOLDER = re.compile(r"(?i)^(?:none|nil|null|n/?a|na|not applicable|unknown|tbd|pending|-+|_+|\[[^\]]*\]|<[^>]*>|\{[^}]*\}|\([^)]*\))\.?$")
+
+# A schema in a prompt ("address: Address", "zip_code: str") names types, not values.
+TYPE_NAME = re.compile(r"(?i)^(?:str|string|int|integer|float|number|bool|boolean|list|dict|object|array|any|date|datetime|optional|list\[.*|dict\[.*|optional\[.*)[,;]?$")
+
+
 class FieldRule:
     def __init__(self, spec: dict):
         self.id = spec["id"]
@@ -60,7 +77,20 @@ class FieldRule:
         self.label = spec["label"]
         self.key = re.compile(spec["key"])
         self.confidence = spec["confidence"]
+        self.value = re.compile(spec["value"]) if spec.get("value") else None
         self.exclude = re.compile(spec["exclude"]) if spec.get("exclude") else None
+        self.labelled_only = bool(spec.get("labelled"))
+
+    def matches(self, key: str, value: str, labelled: bool) -> bool:
+        value = value.strip()
+        if not value or (self.labelled_only and not labelled) or not self.key.search(key):
+            return False
+        if labelled and (not re.search(r"[A-Za-z0-9]", value) or PLACEHOLDER.match(value)
+                         or TYPE_NAME.match(value) or label_key(value) == key):
+            return False
+        if self.value and not self.value.search(value):
+            return False
+        return not (self.exclude and self.exclude.search(value))
 
 
 @lru_cache(maxsize=1)
@@ -75,21 +105,66 @@ def labels() -> dict[str, str]:
     return {r.category: r.label for r in [*detectors, *fields]}
 
 
+# "First Name: Rahul", "**DOB:** 1990-01-01", "- Address = 12 MG Road"
+LABEL_LINE = re.compile(r"^[ \t>*_#|-]*([A-Za-z][A-Za-z0-9 ./()'_-]{0,40}?)[ \t*_]*[:=][ \t*_]*(\S[^\n]*?)[ \t*_]*$", re.M)
+
+
+def label_key(label: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", label.lower()).strip("_")
+
+
+def labelled_pairs(text: str):
+    """(key, value) pairs from form lines and markdown tables inside free text."""
+    if ":" in text or "=" in text:
+        for m in LABEL_LINE.finditer(text):
+            yield label_key(m.group(1)), m.group(2)
+    rows = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("|")]
+    header = None
+    for row in rows:
+        cells = [c.strip(" *_") for c in row.strip("|").split("|")]
+        if all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
+            continue
+        if header is None or len(cells) != len(header):
+            header = [label_key(c) for c in cells]
+            continue
+        yield from zip(header, cells)
+
+
+_ner = None
+NER_MIN_WORDS = 3
+
+
+def enable_ner():
+    """Load the optional model (leakmap[ner]) for names and addresses in free text."""
+    global _ner
+    from .ner import NER
+    _ner = NER()
+
+
 def scan_value(value: str, key: str) -> list[tuple[str, str, str]]:
     """Return (category, matched_text, confidence) for one string value."""
     detectors, fields = load_rules()
     out = []
+    if _ner and len(value.split()) >= NER_MIN_WORDS:
+        out.extend(_ner.find(value[:MAX_STRING]))
+    whole = set()  # categories already reported for the whole value by its field name
     for rule in fields:
-        if rule.key.search(key) and value.strip() and not (rule.exclude and rule.exclude.search(value.strip())):
+        if rule.matches(key, value, labelled=False):
             out.append((rule.category, value, rule.confidence))
+            whole.add(rule.category)
     if len(value) < 5:
         return out
     value = value[:MAX_STRING]
+    if "\n" in value or ":" in value:
+        for label, text in labelled_pairs(value):
+            for rule in fields:
+                if rule.matches(label, text, labelled=True):
+                    out.append((rule.category, text, rule.confidence))
     claimed: list[tuple[int, int]] = []
     for det in detectors:
         for m in det.regex.finditer(value):
             start, end = m.span()
-            if any(start < c_end and end > c_start for c_start, c_end in claimed):
+            if det.category in whole or any(start < c_end and end > c_start for c_start, c_end in claimed):
                 continue
             if det.validator and not det.validator(m.group()):
                 continue
@@ -118,6 +193,10 @@ def walk(obj, path: str = "", key: str = "", depth: int = 0):
                 return
             except ValueError:
                 pass
+        decoded = from_base64(s) if depth < MAX_JSON_DEPTH else None
+        if decoded is not None:
+            yield from walk(decoded, f"{path}(base64)", key, depth + 1)
+            return
         yield path, key, obj
     elif isinstance(obj, bool) or obj is None:
         return
@@ -179,13 +258,33 @@ def _parse_body(body: bytes, content_type: str, form_fields):
 
 
 def walk_text(text: str, path: str, key: str):
-    s = text.strip()
-    if s[:1] in "{[":
+    return list(walk(text, path, key))
+
+
+BASE64 = re.compile(r"[A-Za-z0-9+/]{16,}={0,2}|[A-Za-z0-9_-]{16,}={0,2}")
+
+
+def from_base64(s: str):
+    """Decoded text (or JSON) when s is base64 of readable text, else None.
+
+    Mixpanel sends events as data=<base64 JSON>; secrets are often stored the same way.
+    """
+    if len(s) < 16 or len(s) > MAX_STRING or not BASE64.fullmatch(s) or s.isalpha() or s.isdigit():
+        return None
+    try:
+        raw = base64.b64decode(s + "=" * (-len(s) % 4), altchars=b"-_" if "-" in s or "_" in s else None, validate=True)
+        text = raw.decode("utf-8")
+    except (binascii.Error, ValueError):
+        return None
+    if sum(c.isprintable() or c in "\n\r\t" for c in text) < 0.95 * len(text) or len(text) < 8:
+        return None
+    t = text.strip()
+    if t[:1] in "{[":
         try:
-            return list(walk(json.loads(s), path, key))
+            return json.loads(t)
         except ValueError:
             pass
-    return [(path, key, text)]
+    return text
 
 
 def scan_body(body: bytes, content_type: str, query=(), form_fields=None, path: str = ""):

@@ -19,6 +19,8 @@ leakmap decrypts HTTPS traffic on your machine, so it should be judged the way y
 
 Dependencies are locked in `uv.lock` with hashes. CI installs from the lock (`uv sync --locked`) and runs `pip-audit` against it on every push and once a week. Dependabot opens updates for the lock file and for GitHub Actions. Actions are pinned to commit SHAs.
 
+The optional `ner` extra (names and addresses in free text) adds GLiNER, transformers and torch. torch comes from the PyTorch CPU index (`download.pytorch.org/whl/cpu`), pinned by hash in the lock like everything else. pip-audit cannot look up `+cpu` builds, so CI checks the locked torch version against OSV in a separate step. The model is downloaded from Hugging Face at a pinned commit (`urchade/gliner_multi_pii-v1@1fcf13e`); its tokenizer comes from `microsoft/mdeberta-v3-base`, which GLiNER does not let us pin. Text is processed locally; nothing is sent to Hugging Face. The base install does not include any of this.
+
 Known advisories that are accepted, and why:
 
 | Package | Advisories | Why it's accepted |
